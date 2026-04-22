@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" color-mode="user">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ConConners Crazy Content</title>
+    <link rel="stylesheet" href="/mvp.css"> 
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="/data/logos/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/data/logos/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/data/logos/favicon-16x16.png">
+    <link rel="manifest" href="/data/logos/site.webmanifest">
+    <link rel="mask-icon" href="/data/logos/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="/data/logos/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="/data/logos/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    <link type="text/css" rel="stylesheet" href="./rom-patcher-js/style.css" media="all"/>
+    <script type="text/javascript" src="./rom-patcher-js/RomPatcher.webapp.js"></script>
+  </head>
+  
+  <body>
+    <header>
+      <nav small>
+          <a href="/"><img alt="Logo" src="/data/logos/logo.png" height="70"></a>
+          <ul>
+            <li><a id="go-back">Go back to Content Page</a></li>
+          </ul>
+      </nav>
+      <h1 id="title">Loading...</h1>
+      <p id="subtitle"></p>
+    </header>
+
+    <main>
+        <div id="patcher" hidden>
+
+            <div id="rom-patcher-container">
+                <div class="margin-bottom" id="rom-patcher-row-file-rom">
+                    <div class="text-center">
+                        <label  data-localize="yes">ROM file</label>
+                    </div>
+                    <div class="rom-patcher-container-input">
+                        <input type="file" id="rom-patcher-input-file-rom" class="empty" disabled />
+                    </div>
+                </div>
+        
+                <div class="text-center" id="rom-patcher-row-apply">
+                    <div id="rom-patcher-row-error-message" class="margin-bottom"><span id="rom-patcher-error-message"></span>
+                    </div>
+                    <button id="rom-patcher-button-apply" data-localize="yes" disabled>Apply patch</button>
+                </div>
+            </div>
+        
+            <div id="rom-patcher-powered" class="text-center">
+                <a href="https://github.com/marcrobledo/RomPatcher.js" target="_blank"><img
+                        src="./rom-patcher-js/assets/powered_by_rom_patcher_js.png" loading="lazy" />Powered by Rom Patcher JS</a>
+            </div>
+
+            <div class="rom-patcher-container-input">
+              <select id="rom-patcher-select-patch" hide></select>
+            </div>
+
+            <div class="center footer">
+              <h2 class="text-center">Unsure how this works?</h2>
+              <a href="/howto/play.html">Check the help page!</a>
+            </div>
+        </div>
+    </main>
+    
+	<script src="index.js"></script>
+  </body>
+</html>

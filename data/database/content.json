@@ -1,0 +1,377 @@
+{
+    "content": [
+
+        {
+            "id": "scrolls6",
+        
+            "type": "hack",
+            "game": "zm",
+            "name": "Metroid: Scrolls 6",
+            "authors": ["Conner", "OneOf99", "CaptGlitch", "JRP"],
+            "description": "Metroid: Scrolls 6 is a full, open-ended Metroid Zero Mission hack, originally made for the 2018 Berserker Contest made by Conner, OneOf99, CaptGlitch and JRP.\nThis version is an overhauled version of the original contest hack.\n\nThe hack has full graphical changes and a full original soundtrack.\nSaid soundtrack can also be listened to at SoundCloud.\nYou can play and explore 7 full areas and might also find things never used in a hack before.",
+        
+            "images": ["/data/images/scrolls6/title.png", "/data/images/scrolls6/solum.png", "/data/images/scrolls6/mons.png", "/data/images/scrolls6/mons-ice.png", "/data/images/scrolls6/silva.png", "/data/images/scrolls6/arx.png"],
+            "downloads": 
+            [
+                {
+                    "name": "Scrolls 6 V.1.1",
+                    "path": "/data/patches/scrolls6-v.1.1.ips",
+                    "date": "2021-02-10"
+                },
+                {
+                    "name": "Scrolls 6 V.1.0",
+                    "path": "/data/patches/scrolls6-v.1.0.ips",
+                    "date": "2018-12"
+                }
+            ]
+        },
+
+        {
+            "id": "zm-flipped",
+        
+            "type": "hack",
+            "game": "zm",
+            "name": "noiƨƨiM oɿɘZ :bioɿtɘM",
+            "authors": ["Conner"],
+            "description": "It is Metroid: Zero Mission... but horizontally flipped! There are some minor parts of the game that are unflipped but it is being kept to a minimum. Special thanks to Raygun, yohann, caauyjdp and Cpt.Glitch.",
+        
+            "images": ["/data/images/zm-flipped/title.png", "/data/images/zm-flipped/brinstar.png", "/data/images/zm-flipped/norfair.png", "/data/images/zm-flipped/chozodia.png"],
+            "downloads": 
+            [
+                {
+                    "name": "Zero Mission Flipped V.1.0",
+                    "path": "/data/patches/zm-flipped-v.1.0.ips",
+                    "date": "2025-04-01"
+                }
+            ]
+        },
+
+        {
+            "id": "slb",
+        
+            "type": "hack",
+            "game": "zm",
+            "name": "So Little Bubble",
+            "authors": ["Conner"],
+            "description": "This hack was made in less than 24h. I thought it might be a good challenge. Expect about 10 - 15 minutes of playtime.",
+        
+            "images": ["/data/images/slb/title.png", "/data/images/slb/save.png", "/data/images/slb/room.png"],
+            "downloads": 
+            [
+                {
+                    "name": "So Little Bubble V.1.1",
+                    "path": "/data/patches/slb-v.1.1.ips",
+                    "date": "2021-10-18"
+                },
+                {
+                    "name": "So Little Bubble V.1.0",
+                    "path": "/data/patches/slb-v.1.0.ips",
+                    "date": "2021-02-01"
+                }
+            ]
+        },
+
+        {
+            "id": "extraction",
+        
+            "type": "hack",
+            "game": "zm",
+            "name": "Metroid: Extraction",
+            "authors": ["Conner", "Exister", "Raygun"],
+            "description": "This short hack was made in two days. The world was created in less than 24 hours but due to some major problems we had to work on the hack for another day! Space Pirates have stolen a Metroid Egg while you were on your way to theCeres Station. It is your mission to extract the Metroid Egg from the Pirates' Space Station on Planet Buna SS0 in the Nulia system and return it to your ship!",
+        
+            "images": ["/data/images/extraction/title.png", "/data/images/extraction/outside.png", "/data/images/extraction/cavern.png", "/data/images/extraction/elevator.png"],
+            "downloads": 
+            [
+                {
+                    "name": "Extraction V.1.2",
+                    "path": "/data/patches/extraction-v.1.2.bps",
+                    "date": "2022-03-06"
+                },
+                {
+                    "name": "Extraction V.1.1",
+                    "path": "/data/patches/extraction-v.1.1.bps",
+                    "date": "2022-03-01"
+                },
+                {
+                    "name": "Extraction V.1.0",
+                    "path": "/data/patches/extraction-v.1.0.bps",
+                    "date": "2022-03-01"
+                }
+            ]
+        },
+
+        {
+            "id": "spooky2",
+        
+            "type": "hack",
+            "game": "zm",
+            "name": "Spooky Mission 2: The Nightmare Before Christmas",
+            "authors": ["CaptGlitch", "Caauyjdp", "Conner", "Ing Ing", "Jiffy", "JRP", "M3D", "NathanTech", "OneOf99", "Whalerynth"],
+            "description": "Samus, ever the fool, decided to jump down Ing Ing's pitfall trap during the escape, and was crushed by the falling pumpkin at the end of her quest to stop Imago from bringing eternal Christmas. But what's this? Imago has returned??? And he's threatening to bring eternal Christmas again? Samus turns in her grave, and her soul is snapped back to reality so that she can prevent this disaster! Join her on a new mission throughout Spooky Isle and find a way to stop Imago's devious plan.",
+        
+            "images": ["/data/images/spooky2/title.png", "/data/images/spooky2/nest.png", "/data/images/spooky2/boneyard.png", "/data/images/spooky2/glacier.png"],
+            "downloads": 
+            [
+                {
+                    "name": "Spooky Mission 2 V.1.3",
+                    "path": "/data/patches/spooky2-v.1.3.zip",
+                    "date": "2024-07-16"
+                },
+                {
+                    "name": "Spooky Mission 2 V.1.2a",
+                    "path": "/data/patches/spooky2-v.1.2a.zip",
+                    "date": "2022-01-07"
+                },
+                {
+                    "name": "Spooky Mission 2 V.1.2",
+                    "path": "/data/patches/spooky2-v.1.2.zip",
+                    "date": "2022-01-07"
+                },
+                {
+                    "name": "Spooky Mission 2 V.1.1",
+                    "path": "/data/patches/spooky2-v.1.1.zip",
+                    "date": "2021-12-24"
+                },
+                {
+                    "name": "Spooky Mission 2 V.1.0",
+                    "path": "/data/patches/spooky2-v.1.0.zip",
+                    "date": "2021-10-31"
+                }
+            ]
+        },
+
+        {
+            "id": "lamp",
+        
+            "type": "tool",
+            "game": "m2",
+            "name": "LAMP",
+            "authors": ["Conner"],
+            "description": "LAMP is a feature-rich Metroid 2: Return of Samus editor. Made with .NET and Windows Forms. You need to install .NET 6 (or higher) to run the program. Stable releases take a longer time to release but add a lot of features, which are considered stable, and fix a lot of bugs. If you want faster updates and quicker access to features, which might still be in development, download the latest development builds.",
+        
+            "images": ["/data/images/lamp/title.png", "/data/images/lamp/editor.png"],
+            "downloads": 
+            [
+                {
+                    "name": "LAMP Development",
+                    "path": "https://nightly.link/LAMP-Platform/LAMP/workflows/publish-dev-build/main/LAMP-devbuild-x64.zip",
+                    "date": ""
+                },
+                {
+                    "name": "LAMP Stable",
+                    "path": "https://github.com/LAMP-Platform/LAMP/releases",
+                    "date": ""
+                }
+            ]
+        },
+
+        {
+            "id": "subzero",
+        
+            "type": "hack",
+            "game": "zm",
+            "name": "Metroid: Subzero",
+            "authors": ["Conner"],
+            "description": "Metroid Subzero is a short, 30 minute ROM-Hack first released in March 2020. Explore a handcrafted world with a unique design and some surprises.",
+        
+            "images": ["/data/images/subzero/title.png", "/data/images/subzero/cave.png", "/data/images/subzero/morph.png", "/data/images/subzero/ripper.png", "/data/images/subzero/storm.png"],
+            "downloads": 
+            [
+                {
+                    "name": "Subzero V.1.2",
+                    "path": "/data/patches/subzero-v.1.2.ips",
+                    "date": "2020-08-08"
+                },
+                {
+                    "name": "Subzero V.1.1",
+                    "path": "/data/patches/subzero-v.1.1.ips",
+                    "date": "2020-03-21"
+                },
+                {
+                    "name": "Subzero V.1.0",
+                    "path": "/data/patches/subzero-v.1.0.ips",
+                    "date": "2020-03-10"
+                }
+            ]
+        },
+
+        {
+            "id": "freezeflame",
+        
+            "type": "hack",
+            "game": "zm",
+            "name": "Metroid FreezeFlame",
+            "authors": ["Conner"],
+            "description": "This hack is an entire heatrun but with fairly spaced healing stations! I changed a lot of stuff to balance the game as best as I could. It should be easy for veterans and slightly challenging for begginers/vanilla players.",
+        
+            "images": ["/data/images/freezeflame/title.png", "/data/images/freezeflame/heated.png", "/data/images/freezeflame/frozen.png", "/data/images/freezeflame/portal.png"],
+            "downloads": 
+            [
+                {
+                    "name": "FreezeFlame V.1.2a",
+                    "path": "/data/patches/freezeflame-v.1.2a.ips",
+                    "date": "2020-10-04"
+                },
+                {
+                    "name": "FreezeFlame V.1.2",
+                    "path": "/data/patches/freezeflame-v.1.2.ips",
+                    "date": "2020-10-04"
+                },
+                {
+                    "name": "FreezeFlame V.1.1",
+                    "path": "/data/patches/freezeflame-v.1.1.ips",
+                    "date": "2020-10-02"
+                },
+                {
+                    "name": "FreezeFlame V.1.0",
+                    "path": "/data/patches/freezeflame-v.1.0.ips",
+                    "date": "2020-02-15"
+                },
+                {
+                    "name": "FreezeFlame V.0.1",
+                    "path": "/data/patches/freezeflame-v.0.1.ips",
+                    "date": "2018-04-14"
+                }
+            ]
+        },
+
+        {
+            "id": "freezeflame2",
+        
+            "type": "hack",
+            "game": "zm",
+            "name": "Metroid FreezeFlame 2: Twisted Dimensions",
+            "authors": ["Conner"],
+            "description": "Metroid FreezeFlame 2: Twisted Dimensions is the sequel to the 2020 released hack Metroid FreezeFlame. In comparison to the first entry in the FreezeFlame series, this hack is not entirely a heat run. Only a short portion in the beginning requires forced damage through heat! The hack was created for the Metroid Construction One Week Contest, which gave contestants one week to create a ROM-Hack or Fangame from scratch. FreezeFlame 2 is a unique hack since it uses the portal elements from FreezeFLame 1 to put the players in worlds formerly only known from other ROM-Hacks. It is reccommended that the player is at least a bit familiar with other Metroid: Zero Mission ROM-Hacks to have a truly good time with this hack.",
+        
+            "images": ["/data/images/freezeflame2/title.png", "/data/images/freezeflame2/frozen.png", "/data/images/freezeflame2/heated.png", "/data/images/freezeflame2/portal.png", "/data/images/freezeflame2/forest.png"],
+            "downloads": 
+            [
+                {
+                    "name": "FreezeFlame 2 V.1.0",
+                    "path": "/data/patches/freezeflame2-v.1.0.ips",
+                    "date": "2021-01-11"
+                }
+            ]
+        },
+
+        {
+            "id": "magethemes",
+        
+            "type": "tool",
+            "game": "zm mf",
+            "name": "MAGE Themes",
+            "authors": ["Biospark", "Conner"],
+            "description": "Metroid Advance Game Editor (MAGE) is a comprehensive hacking utility for Metroid Fusion and Metroid Zero Mission created by biospark. It is a .NET 3.0 application written in C#. MAGE Themes is a modification of the original MAGE 1.4 source code created by ConConner. It is a .NET 6.0 application. Currently both versions are only compatible with the North American (U) version of each game.",
+        
+            "images": ["/data/images/magethemes/title.png"],
+            "downloads": 
+            [
+                {
+                    "name": "MAGE Themes",
+                    "path": "https://github.com/ConConner/MAGE-Themes/releases/latest",
+                    "date": ""
+                }
+            ]
+        },
+
+        {
+            "id": "mapmapper",
+        
+            "type": "tool",
+            "game": "zm mf m2 sm m1",
+            "name": "ConCon's MapMapper",
+            "authors": ["Conner"],
+            "description": "ConCon's Map Mapper is a tool, used to design and layout your game in an intuitive way! The tool is easy to learn and easy to master. With ConCon's Map Mapper you can always make fast changes in your map. While it was primarily designed for Metroid ROM-Hacks, you are able to use it for whatever Metroidvania you want to make!",
+        
+            "images": ["/data/images/mapmapper/title.png"],
+            "downloads": 
+            [
+                {
+                    "name": "MapMapper V.2.2",
+                    "path": "/data/files/mapmapper-v.2.2.zip",
+                    "date": "2022-12-08"
+                },
+                {
+                    "name": "MapMapper V.2.1",
+                    "path": "/data/files/mapmapper-v.2.1.zip",
+                    "date": "2022-02-03"
+                },
+                {
+                    "name": "MapMapper V.2.0",
+                    "path": "/data/files/mapmapper-v.2.0.zip",
+                    "date": "2021-05-23"
+                },
+                {
+                    "name": "MapMapper V.1.1",
+                    "path": "/data/files/mapmapper-v.1.1.zip",
+                    "date": "2021-01-10"
+                },
+                {
+                    "name": "MapMapper V.1.0",
+                    "path": "/data/files/mapmapper-v.1.0.zip",
+                    "date": "2020-12-22"
+                },
+                {
+                    "name": "MapMapper V.0.2",
+                    "path": "/data/files/mapmapper-v.0.2.zip",
+                    "date": "2020-08-15"
+                }
+            ]
+        },
+
+        {
+            "id": "ohkozm",
+        
+            "type": "hack",
+            "game": "zm",
+            "name": "Metroid Zero Mission: OHKO",
+            "authors": ["Conner"],
+            "description": "This hack was made as an ASM experiment. The idea came from JRP, who complained about the other One hit K.O. ZM hack having modified missiles.",
+        
+            "images": ["/data/images/ohkozm/title.png", "/data/images/ohkozm/settings.png"],
+            "downloads": 
+            [
+                {
+                    "name": "Zero Mission: OHKO V.1.0",
+                    "path": "/data/patches/ohkozm-v.1.0.ips",
+                    "date": "2021-07-12"
+                }
+            ]
+        }
+    ],
+
+    "games": {
+        "m1": {
+            "name": "Metroid",
+            "console": "NES",
+            "SHA-1": "ecf39ec5a33e6a6f832f03e8ffc61c5d53f4f90b",
+            "CRC32": "A2C89CB9"
+        },
+        "zm": {
+            "name": "Metroid: Zero Mission",
+            "console": "GBA",
+            "SHA-1": "5de8536afe1f0078ee6fe1089f890e8c7aa0a6e8",
+            "CRC32": "5C61A844"
+        },
+        "m2": {
+            "name": "Metroid II: Return of Samus",
+            "console": "GB",
+            "SHA-1": "74a2fad86b9a4c013149b1e214bc4600efb1066d",
+            "CRC32": "DEE05370"
+        },
+        "sm": {
+            "name": "Super Metroid",
+            "console": "SNES",
+            "SHA-1": "da957f0d63d14cb441d215462904c4fa8519c613",
+            "CRC32": "D63ED5F8"
+        },
+        "mf": {
+            "name": "Metroid Fusion",
+            "console": "GBA",
+            "SHA-1": "CA33F4348C2C05DD330D37B97E2C5A69531DFE87",
+            "CRC32": "6C75479C"
+        }
+    }
+}
