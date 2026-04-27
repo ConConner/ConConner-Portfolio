@@ -99,26 +99,6 @@
   --sidebar-ring: oklch(0.737 0.021 106.9)
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
 #root {
   width: 1126px;
   max-width: 100%;
@@ -128,13 +108,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-
+} 
 
 @theme inline {
   --font-heading: var(--font-sans);
@@ -181,6 +155,7 @@ body {
 
 .dark {
   --background: oklch(0.153 0.006 107.1);
+  --bg: oklch(0.153 0.006 107.1);
   --foreground: oklch(0.988 0.003 106.5);
   --card: oklch(0.228 0.013 107.4);
   --card-foreground: oklch(0.988 0.003 106.5);
@@ -220,3 +195,16 @@ body {
     @apply bg-background text-foreground;}
   html {
     @apply font-sans;}}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-animation {
+  animation: marquee var(--duration, 30s) linear infinite;
+}
+
+.marquee-pauseable:hover {
+  animation-play-state: paused;
+}

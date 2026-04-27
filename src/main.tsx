@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import Home from "@/pages/Home";
+import Content from "@/pages/Content";
 import { ThemeProvider } from "./components/theme-provider";
 import { ContentDetailRoute } from "./routes/ContentDetailRoute";
 import { getAllContent, getAllGames } from "./data/db";
@@ -19,8 +20,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/projects" element={<Content />} />
             <Route
-              path="/content/:id"
+              path="/projects/:id"
               element={<ContentDetailRoute games={games} content={content} />}
             />
           </Routes>

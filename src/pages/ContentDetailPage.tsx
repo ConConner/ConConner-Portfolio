@@ -72,14 +72,14 @@ export function ContentDetailPage({
       {/* Image Gallery */}
       {item.images.length > 0 && (
         <>
-          <ScrollArea className="w-full whitespace-nowrap rounded-lg border">
+          <ScrollArea className="w-full whitespace-nowrap  border">
             <div className="flex w-max space-x-4 p-4">
               {item.images.map((src, i) => (
                 <button
                   key={src}
                   type="button"
                   onClick={() => setLightboxIndex(i)}
-                  className="shrink-0 overflow-hidden rounded-md"
+                  className="shrink-0 overflow-hidden"
                 >
                   <img
                     src={src}
@@ -175,7 +175,7 @@ export function ContentDetailPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col gap-3 rounded-lg border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-1">
                 <p className="font-medium">{latestDownload.name}</p>
                 <p className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -248,7 +248,7 @@ const DownloadRow = ({
   onDownload,
 }: DownloadRowProps) => {
   return (
-    <div className="flex items-center justify-between gap-2 rounded-lg border p-3">
+    <div className="flex items-center justify-between gap-2  border p-3">
       <div className="min-w-0 space-y-1">
         <p className="truncate font-medium">{download.name}</p>
         <p className="flex items-center gap-1 text-xs text-muted-foreground">
