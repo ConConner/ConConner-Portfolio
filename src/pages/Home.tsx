@@ -1,5 +1,5 @@
 // app/routes/home.tsx
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageMarquee } from "@/components/ImageMarquee";
 import { getAllContent } from "@/data/db";

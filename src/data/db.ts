@@ -23,5 +23,5 @@ export const getGameName = (id: string): string | undefined => db.games[id]?.nam
 export const getContentWithGames = () =>
   db.content.map((item) => ({
     ...item,
-    gameInfo: db.games[item.game],
+    gameInfo: db.games[item.game ?? ""],
   }));
