@@ -7,16 +7,11 @@ import { Button } from "@/components/ui/button";
 
 const TIMELINE_YEARS = [2024, 2023, 2022] as const;
 
-interface ContentItem {
-  id: string;
-  // Add other fields as needed based on your actual data structure
-}
-
 const HeroBlobs = memo(function HeroBlobs() {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute -left-1/4 -top-1/4 h-[600px] w-[600px] animate-pulse rounded-full bg-primary/20 blur-3xl" />
-      <div className="absolute -right-1/4 bottom-0 h-[500px] w-[500px] animate-pulse rounded-full bg-accent/20 blur-3xl [animation-delay:1s]" />
+    <div className="pointer-events-none absolute inset-0 overflow-y-visible overflow-clip">
+      <div className="absolute -left-1/4 -top-1/4 h-150 w-150 animate-pulse rounded-full bg-primary/20 blur-3xl" />
+      <div className="absolute -right-1/4 bottom-0 h-100 w-125 animate-pulse rounded-full bg-accent/25 blur-3xl [animation-delay:1s]" />
     </div>
   );
 });
@@ -38,7 +33,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center text-center">
       {/* Hero */}
-      <section className="relative flex min-h-[81vh] w-full flex-col items-center justify-center overflow-hidden px-6 py-24 md:px-12">
+      <section className="relative flex min-h-[81vh] w-full flex-col items-center justify-center px-6 py-24 md:px-12">
         <HeroBlobs />
         <div className="relative">
           <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">

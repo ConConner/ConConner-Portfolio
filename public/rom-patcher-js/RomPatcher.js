@@ -7,7 +7,7 @@
 *
 * MIT License
 * 
-* Copyright (c) 2016-2024 Marc Robledo
+* Copyright (c) 2016-2025 Marc Robledo
 * 
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -97,7 +97,7 @@ const RomPatcher = (function () {
 			patchFile.littleEndian = false;
 			patchFile.seek(0);
 
-			var header = patchFile.readString(6);
+			var header = patchFile.readString(8);
 			var patch = null;
 			if (header.startsWith(IPS.MAGIC)) {
 				patch = IPS.fromFile(patchFile);
@@ -113,6 +113,8 @@ const RomPatcher = (function () {
 				patch = RUP.fromFile(patchFile);
 			} else if (header.startsWith(PPF.MAGIC)) {
 				patch = PPF.fromFile(patchFile);
+			} else if (header.startsWith(BDF.MAGIC)) {
+				patch = BDF.fromFile(patchFile);
 			} else if (header.startsWith(PMSR.MAGIC)) {
 				patch = PMSR.fromFile(patchFile);
 			} else if (header.startsWith(VCDIFF.MAGIC)) {
@@ -219,6 +221,8 @@ const RomPatcher = (function () {
 
 			if (options.outputSuffix) {
 				patchedRom.fileName = romFile.fileName.replace(/\.([^\.]*?)$/, ' (patched).$1');
+				if(patchedRom.unpatched)
+					patchedRom.fileName = patchedRom.fileName.replace(' (patched)', ' (unpatched)');
 			} else if (patch._originalPatchFile) {
 				patchedRom.fileName = patch._originalPatchFile.fileName.replace(/\.\w+$/i, (/\.\w+$/i.test(romFile.fileName) ? romFile.fileName.match(/\.\w+$/i)[0] : ''));
 			} else {
@@ -228,7 +232,7 @@ const RomPatcher = (function () {
 			return patchedRom;
 		},
 
-		createPatch: function (originalFile, modifiedFile, format) {
+		createPatch: function (originalFile, modifiedFile, format, metadata) {
 			if (!(originalFile instanceof BinFile))
 				throw new Error('Original ROM file is not an instance of BinFile');
 			else if (!(modifiedFile instanceof BinFile))
@@ -251,7 +255,9 @@ const RomPatcher = (function () {
 			} else if (format === 'aps') {
 				patch = APS.buildFromRoms(originalFile, modifiedFile);
 			} else if (format === 'rup') {
-				patch = RUP.buildFromRoms(originalFile, modifiedFile);
+				patch = RUP.buildFromRoms(originalFile, modifiedFile, metadata && metadata.Description? metadata.Description : null);
+			}  else if (format === 'ebp') {
+				patch = IPS.buildFromRoms(originalFile, modifiedFile, metadata);
 			} else {
 				throw new Error('Invalid patch format');
 			}
@@ -400,6 +406,7 @@ if (typeof module !== 'undefined' && module.exports) {
 	BPS = require('./modules/RomPatcher.format.bps');
 	RUP = require('./modules/RomPatcher.format.rup');
 	PPF = require('./modules/RomPatcher.format.ppf');
+	BDF = require('./modules/RomPatcher.format.bdf');
 	PMSR = require('./modules/RomPatcher.format.pmsr');
 	VCDIFF = require('./modules/RomPatcher.format.vcdiff');
 }

@@ -7,7 +7,7 @@
 *
 * MIT License
 * 
-* Copyright (c) 2016-2024 Marc Robledo
+* Copyright (c) 2016-2025 Marc Robledo
 * 
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@
 	- switch to ES6 classes and modules?
 */
 
-const ROM_PATCHER_JS_PATH = './rom-patcher-js/';
+const ROM_PATCHER_JS_PATH = '/rom-patcher-js/';
 
 const RomPatcherWeb = (function () {
 	const SCRIPT_DEPENDENCIES = [
@@ -48,6 +48,7 @@ const RomPatcherWeb = (function () {
 		'modules/RomPatcher.format.bps.js',
 		'modules/RomPatcher.format.rup.js',
 		'modules/RomPatcher.format.ppf.js',
+		'modules/RomPatcher.format.bdf.js',
 		'modules/RomPatcher.format.pmsr.js',
 		'modules/RomPatcher.format.vcdiff.js',
 		'modules/zip.js/zip.min.js',
@@ -1175,7 +1176,7 @@ const ZIPManager = (function (romPatcherWeb) {
 
 	const ZIP_MAGIC = '\x50\x4b\x03\x04';
 
-	const FILTER_PATCHES = /\.(ips|ups|bps|aps|rup|ppf|mod|xdelta|vcdiff)$/i;
+	const FILTER_PATCHES = /\.(ips|ups|bps|aps|rup|ppf|ebp|bdf|bspatch|mod|xdelta|vcdiff)$/i;
 	//const FILTER_ROMS=/(?<!\.(txt|diz|rtf|docx?|xlsx?|html?|pdf|jpe?g|gif|png|bmp|webp|zip|rar|7z))$/i; //negative lookbehind is not compatible with Safari https://stackoverflow.com/a/51568859
 	const FILTER_NON_ROMS = /(\.(txt|diz|rtf|docx?|xlsx?|html?|pdf|jpe?g|gif|png|bmp|webp|zip|rar|7z))$/i;
 
@@ -1559,6 +1560,23 @@ const PatchBuilderWeb = (function (romPatcherWeb) {
 		}
 	};
 
+	const _getMetadataFields = function (patchFormat) {
+		if (patchFormat === 'rup') {
+			return ['Description'];
+		} else if (patchFormat === 'ebp') {
+			return ['Author', 'Title', 'Description'];
+		}
+		return [];
+	};
+	const _buildMetadataObject = function (patchFormat) {
+		return _getMetadataFields(patchFormat).reduce((metadata, field) => {
+			const input = document.getElementById('patch-builder-input-metadata-' + field.toLowerCase().replace(/\s+/g, '-'));
+			if (input && input.value.trim())
+				metadata[field] = input.value.trim();
+			return metadata;
+		}, {});
+	};
+
 	var webWorkerCreate;
 
 	var initialized = false;
@@ -1644,18 +1662,35 @@ const PatchBuilderWeb = (function (romPatcherWeb) {
 						_setToastError(_('Patch creation is not compatible with zipped ROMs'), 'warning');
 				});
 			});
+			document.getElementById('patch-builder-select-patch-type').addEventListener('change', function () {
+				if (!document.getElementById('patch-builder-container-metadata-inputs'))
+					return;
+
+				document.getElementById('patch-builder-container-metadata-inputs').innerHTML = '';
+
+				_getMetadataFields(this.value).forEach(function (field) {
+					const input = document.createElement('input');
+					input.id = 'patch-builder-input-metadata-' + field.toLowerCase().replace(/\s+/g, '-');
+					input.className = 'patch-builder-input-metadata';
+					input.type = 'text';
+					input.placeholder = _(field);
+					document.getElementById('patch-builder-container-metadata-inputs').appendChild(input);
+				});
+			});
 			document.getElementById('patch-builder-button-create').addEventListener('click', function () {
+				const patchFormat=document.getElementById('patch-builder-select-patch-type').value;
 				_setElementsStatus(false);
 				_setCreateButtonSpinner(true);
 				webWorkerCreate.postMessage(
 					{
 						originalRomU8Array: originalRom._u8array,
 						modifiedRomU8Array: modifiedRom._u8array,
-						format: document.getElementById('patch-builder-select-patch-type').value
+						format: patchFormat,
+						metadata: _buildMetadataObject(patchFormat)
 					}, [
-					originalRom._u8array.buffer,
-					modifiedRom._u8array.buffer
-				]
+						originalRom._u8array.buffer,
+						modifiedRom._u8array.buffer
+					]
 				);
 			});
 
@@ -1667,6 +1702,11 @@ const PatchBuilderWeb = (function (romPatcherWeb) {
 }(RomPatcherWeb));
 
 
+// Expose for React/ES Modules
+window.RomPatcherWeb = typeof RomPatcherWeb !== 'undefined' ? RomPatcherWeb : null;
+
+// Just in case the library internally uses the name `RomPatcher` instead
+window.RomPatcher = typeof RomPatcher !== 'undefined' ? RomPatcher : null;
 
 
 
@@ -1780,6 +1820,9 @@ const ROM_PATCHER_LOCALE = {
 		'Modified ROM:': 'ROM modificada:',
 		'Patch type:': 'Tipo de parche:',
 		'Creating patch...': 'Creando parche...',
+		'Author': 'Autor',
+		'Title': 'Título',
+		'Description': 'Descripción',
 
 		'Source ROM checksum mismatch': 'Checksum de ROM original no válida',
 		'Target ROM checksum mismatch': 'Checksum de ROM creada no válida',
@@ -1914,6 +1957,9 @@ const ROM_PATCHER_LOCALE = {
 		'Modified ROM:': 'ROM modificada:',
 		'Patch type:': 'Tipus de pedaç:',
 		'Creating patch...': 'Creant pedaç...',
+		'Author': 'Autor',
+		'Title': 'Títol',
+		'Description': 'Descripció',
 
 		'Source ROM checksum mismatch': 'Checksum de ROM original no vàlida',
 		'Target ROM checksum mismatch': 'Checksum de ROM creada no vàlida',

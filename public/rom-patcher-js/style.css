@@ -16,16 +16,12 @@
 	user-select: none;
 	line-height: 1.8;
 
-	background-color: var(--color-patcher-bg);
+	background-color: #f9fafa;
 	padding: 30px 15px;
 	border-radius: 3px;
-	color: var(--color-text);
+	color: black;
 	max-width: 640px;
 	margin: 0 auto;
-}
-
-#rom-patcher-container input {
-	color: black;
 }
 
 /* Rom Pacher JS - text classes */
@@ -148,7 +144,7 @@
 #rom-patcher-container input[type=file]:focus:not(:disabled),
 #rom-patcher-container select:focus:not(:disabled),
 #rom-patcher-container input[type=checkbox]:focus:not(:disabled) {
-	box-shadow: var(--color-shadow) 0 0 0 2px;
+	box-shadow: #a8fff3 0 0 0 2px;
 }
 
 #rom-patcher-container input[type=file] {
@@ -296,8 +292,8 @@
 	padding: 10px 20px;
 	margin: 0 5px;
 
-	background-color: var(--color-accent);
-	color: var(--color-text);
+	background-color: #2a9ca5;
+	color: white;
 
 	transition: background-color .15s;
 
@@ -369,10 +365,8 @@
 	color: inherit !important;
 	padding-left: 0;
 }
-#rom-patcher-select-patch[hide]{
-	visibility: hidden;
-	size: 0;
-}
+
+
 
 
 
@@ -505,7 +499,7 @@
 }
 
 #rom-patcher-powered a {
-	color: var(--color-text);
+	color: #cce;
 	padding: 4px 8px;
 	text-decoration: none;
 	opacity: .25;
