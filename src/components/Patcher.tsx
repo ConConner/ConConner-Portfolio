@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, FileOutputIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getContentById } from "@/data/db";
+import { getContentById, getGameById } from "@/data/db";
+import type { ContentItem } from "@/data/types";
 
 declare global {
   interface Window {
@@ -35,12 +36,31 @@ const ErrorMessage = (
   );
 };
 
+function getPatchInformationFromHack(
+  item: ContentItem | undefined,
+  path: string | null,
+) {
+  if (!item) return null;
+
+  const game = getGameById(item.game ?? "");
+  if (!game) return null;
+  if (!path) return null;
+
+  return {
+    file: path,
+    inputCrc32: game.CRC32,
+    outputName: item.name,
+  };
+}
+
 export default function Patcher() {
   const { hackId } = useParams<{ hackId: string }>();
   const [searchParams] = useSearchParams();
-  const patchPath = searchParams.get("path");
-  const [itemContent, setItemContent] = useState(getContentById(hackId ?? ""));
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+
+  const patchPath = searchParams.get("path");
+  const itemContent = getContentById(hackId ?? "");
+  const patchInformation = getPatchInformationFromHack(itemContent, patchPath);
 
   const isFreshMount = useRef(true);
 
@@ -95,7 +115,7 @@ export default function Patcher() {
           // SCENARIO 2: The engine is already bound to the DOM.
           // We just swap the patch seamlessly using the built-in wiki method.
           if (PatcherEngine.setEmbededPatches) {
-            PatcherEngine.setEmbededPatches(patchPath);
+            PatcherEngine.setEmbededPatches(patchInformation);
           } else {
             console.warn(
               "setEmbededPatches method not found on PatcherEngine.",
@@ -105,11 +125,11 @@ export default function Patcher() {
           // SCENARIO 1: First time starting up!
           const myPatcherSettings = {
             language: "en",
-            requireValidation: false,
+            requireValidation: true,
             allowDropFiles: true,
           };
 
-          PatcherEngine.initialize(myPatcherSettings, patchPath);
+          PatcherEngine.initialize(myPatcherSettings, patchInformation);
 
           // Set a global flag so we know the engine has permanently locked onto the DOM
           window.__isRomPatcherInitialized = true;
