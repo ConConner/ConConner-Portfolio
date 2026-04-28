@@ -20,7 +20,7 @@ const TRACK_REPEATS = 4;
 
 export function ImageMarquee({
   items,
-  speed = 30,
+  speed = 1000,
   pauseOnHover = true,
   className,
   onImageClick,

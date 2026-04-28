@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ImageMarquee } from "@/components/ImageMarquee";
 import { getAllContent } from "@/data/db";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const TIMELINE_YEARS = [2024, 2023, 2022] as const;
 
@@ -25,10 +26,7 @@ export default function Home() {
     [navigate],
   );
 
-  const handleViewAll = useCallback(
-    () => navigate("/projects"),
-    [navigate],
-  );
+  const handleViewAll = useCallback(() => navigate("/projects"), [navigate]);
 
   return (
     <div className="flex flex-col items-center text-center">
@@ -70,6 +68,8 @@ export default function Home() {
           View All Projects
         </Button>
       </section>
+
+      <Separator className="max-w-3xl" />
 
       {/* Quote */}
       <section className="px-6 py-24 md:px-12">

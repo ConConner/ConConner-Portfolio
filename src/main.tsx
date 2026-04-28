@@ -9,7 +9,7 @@ import Content from "@/pages/Content";
 import { ThemeProvider } from "./components/theme-provider";
 import { ContentDetailRoute } from "./routes/ContentDetailRoute";
 import { getAllContent, getAllGames } from "./data/db";
-import Patcher from "./components/Patcher";
+import PatcherPage from "./pages/PatcherPage";
 
 const content = getAllContent();
 const games = getAllGames();
@@ -26,7 +26,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               path="/projects/:id"
               element={<ContentDetailRoute games={games} content={content} />}
             />
-            <Route path="/patch/:hackId" element={<Patcher />} />
+            <Route path="/patch/:hackId" element={<PatcherPage />} />
           </Routes>
         </Layout>
       </ThemeProvider>

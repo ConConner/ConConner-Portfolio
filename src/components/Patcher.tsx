@@ -1,51 +1,62 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { AlertCircle, FileOutputIcon } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  FileDown,
+  Loader2,
+  Upload,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { getContentById, getGameById } from "@/data/db";
-import type { ContentItem } from "@/data/types";
+import type { ContentItem, Game } from "@/data/types";
+import { cn } from "@/lib/utils";
+
+type PatcherSettings = {
+  language: string;
+  requireValidation: boolean;
+  allowDropFiles: boolean;
+  onvalidaterom: (romFile: unknown, isRomValid: boolean) => void;
+};
+
+type PatchInformation = {
+  file: string;
+  inputCrc32: string;
+  outputName: string;
+};
+
+type RomPatcherEngine = {
+  initialize: (settings: PatcherSettings, patch: PatchInformation) => void;
+  setEmbededPatches?: (patch: PatchInformation) => void;
+};
 
 declare global {
   interface Window {
-    RomPatcherWeb: any;
-    RomPatcher: any;
-    __isRomPatcherInitialized: boolean;
+    RomPatcherWeb?: RomPatcherEngine;
+    RomPatcher?: RomPatcherEngine;
+    __isRomPatcherInitialized?: boolean;
   }
 }
 
-const ErrorMessage = (
-  { message, title }: { message: string; title: string },
-) => {
-  return (
-    <div className="container mx-auto p-6 max-w-2xl mt-12">
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>{title}</AlertTitle>
-        <AlertDescription>
-          {message}
-        </AlertDescription>
-      </Alert>
-    </div>
-  );
-};
+const SCRIPT_ID = "rom-patcher-script";
+const SCRIPT_SRC = "/rom-patcher-js/RomPatcher.webapp.js";
+const CONTAINER_ID = "rom-patcher-container";
 
-function getPatchInformationFromHack(
+function getPatchInformation(
   item: ContentItem | undefined,
   path: string | null,
-) {
-  if (!item) return null;
-
-  const game = getGameById(item.game ?? "");
-  if (!game) return null;
-  if (!path) return null;
-
+  game: Game | undefined,
+): PatchInformation | null {
+  if (!item || !game || !path) return null;
   return {
     file: path,
     inputCrc32: game.CRC32,
@@ -53,268 +64,309 @@ function getPatchInformationFromHack(
   };
 }
 
-export default function Patcher() {
-  const { hackId } = useParams<{ hackId: string }>();
-  const [searchParams] = useSearchParams();
-  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+function getEngine(): RomPatcherEngine | undefined {
+  return window.RomPatcherWeb || window.RomPatcher;
+}
 
-  const patchPath = searchParams.get("path");
-  const itemContent = getContentById(hackId ?? "");
-  const patchInformation = getPatchInformationFromHack(itemContent, patchPath);
+const ErrorMessage = ({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div className={cn("container mx-auto mt-12 max-w-2xl p-6", className)}>
+    <Alert variant="destructive">
+      <AlertCircle className="h-4 w-4" />
+      <AlertTitle>{title}</AlertTitle>
+      <AlertDescription>{children}</AlertDescription>
+    </Alert>
+  </div>
+);
+
+interface PatcherProps {
+  hackId: string | undefined;
+  patchPath: string | null;
+}
+
+export default function Patcher({ hackId, patchPath }: PatcherProps) {
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const [isEngineReady, setIsEngineReady] = useState(false);
+  const [romValidationError, setRomValidationError] = useState<string | null>(
+    null,
+  );
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+
+  const itemContent = useMemo(
+    () => getContentById(hackId ?? ""),
+    [hackId],
+  );
+  const game = useMemo(
+    () => getGameById(itemContent?.game ?? ""),
+    [itemContent?.game],
+  );
+  const patchInformation = useMemo(
+    () => getPatchInformation(itemContent, patchPath, game),
+    [itemContent, patchPath, game],
+  );
+
+  // Keep latest values accessible inside the legacy callback without re-init.
+  const gameRef = useRef(game);
+  const patchInfoRef = useRef(patchInformation);
+  useEffect(() => {
+    gameRef.current = game;
+    patchInfoRef.current = patchInformation;
+  }, [game, patchInformation]);
 
   const isFreshMount = useRef(true);
 
-  // Link script
+  // Inject script
   useEffect(() => {
     if (!patchPath) return;
 
-    // Prevent React Strict Mode double-injection
-    if (document.getElementById("rom-patcher-script")) {
+    const existing = document.getElementById(SCRIPT_ID);
+    if (existing) {
       setIsScriptLoaded(true);
       return;
     }
 
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "/rom-patcher-js/style.css";
-
     const script = document.createElement("script");
-    script.id = "rom-patcher-script";
-    script.src = "/rom-patcher-js/RomPatcher.webapp.js";
+    script.id = SCRIPT_ID;
+    script.src = SCRIPT_SRC;
     script.async = true;
-
-    script.onload = () => {
-      setIsScriptLoaded(true);
-    };
-
-    document.head.appendChild(link);
+    script.onload = () => setIsScriptLoaded(true);
     document.head.appendChild(script);
   }, [patchPath]);
 
-  // Init patcher
+  // Initialize / reinitialize patcher
   useEffect(() => {
-    if (!patchPath) return;
+    if (!patchPath || !patchInformation) return;
 
-    // SCENARIO 3: The user left the patcher page and came back.
-    // React destroyed the old DOM, meaning the Vanilla JS engine is holding onto "dead" HTML elements.
-    // We must hard-reload the page to cleanly reboot the legacy script's memory.
+    // Scenario 3: returning to page, engine is bound to dead DOM → hard reload.
     if (isFreshMount.current && window.__isRomPatcherInitialized) {
       window.location.reload();
       return;
     }
     isFreshMount.current = false;
 
-    let intervalId: number;
+    let intervalId: number | undefined;
+    let cancelled = false;
 
     const tryInitialize = () => {
-      const PatcherEngine = window.RomPatcherWeb || window.RomPatcher;
-      const containerExists = document.getElementById("rom-patcher-container");
+      if (cancelled) return;
+      const engine = getEngine();
+      const container = document.getElementById(CONTAINER_ID);
+      if (!engine || !container) return;
 
-      if (PatcherEngine && containerExists) {
-        if (window.__isRomPatcherInitialized) {
-          // SCENARIO 2: The engine is already bound to the DOM.
-          // We just swap the patch seamlessly using the built-in wiki method.
-          if (PatcherEngine.setEmbededPatches) {
-            PatcherEngine.setEmbededPatches(patchInformation);
-          } else {
-            console.warn(
-              "setEmbededPatches method not found on PatcherEngine.",
-            );
-          }
+      if (window.__isRomPatcherInitialized) {
+        // Scenario 2: hot-swap the patch.
+        if (engine.setEmbededPatches) {
+          engine.setEmbededPatches(patchInformation);
         } else {
-          // SCENARIO 1: First time starting up!
-          const myPatcherSettings = {
-            language: "en",
-            requireValidation: true,
-            allowDropFiles: true,
-          };
-
-          PatcherEngine.initialize(myPatcherSettings, patchInformation);
-
-          // Set a global flag so we know the engine has permanently locked onto the DOM
-          window.__isRomPatcherInitialized = true;
+          console.warn("setEmbededPatches method not found on PatcherEngine.");
         }
-
-        if (intervalId) window.clearInterval(intervalId);
+      } else {
+        // Scenario 1: first init.
+        const settings: PatcherSettings = {
+          language: "en",
+          requireValidation: true,
+          allowDropFiles: true,
+          onvalidaterom: (_romFile, isRomValid) => {
+            if (isRomValid) {
+              setRomValidationError(null);
+              return;
+            }
+            setRomValidationError(
+              `Selected file is not a valid ROM for this patch.\nRequired CRC32-Checksum: ${
+                gameRef.current?.CRC32 ?? "unknown"
+              }`,
+            );
+          },
+        };
+        engine.initialize(settings, patchInformation);
+        window.__isRomPatcherInitialized = true;
       }
+
+      setIsEngineReady(true);
+      if (intervalId !== undefined) window.clearInterval(intervalId);
     };
 
-    // Begin polling
-    const PatcherEngine = window.RomPatcherWeb || window.RomPatcher;
-    const containerExists = document.getElementById("rom-patcher-container");
-
-    if (PatcherEngine && containerExists) {
+    if (getEngine() && document.getElementById(CONTAINER_ID)) {
       tryInitialize();
     } else {
       intervalId = window.setInterval(tryInitialize, 50);
     }
 
-    // Cleanup interval (but we cannot cleanup the Vanilla JS memory here)
     return () => {
-      if (intervalId) window.clearInterval(intervalId);
+      cancelled = true;
+      if (intervalId !== undefined) window.clearInterval(intervalId);
     };
-  }, [patchPath]); // Reruns smoothly whenever the URL patchPath changes
+  }, [patchPath, patchInformation]);
+
+  // Track selected file name for nicer UI feedback (legacy input is controlled by vanilla JS).
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      setSelectedFileName(file?.name ?? null);
+    },
+    [],
+  );
 
   if (!itemContent) {
     return (
-      <ErrorMessage
-        title="Missing Hack Information"
-        message="No hack ID was specified. Please ensure you access this tool via a valid patch link."
-      />
+      <ErrorMessage title="Missing Hack Information">
+        No hack ID was specified. Please ensure you access this tool via a valid
+        patch link.
+      </ErrorMessage>
     );
   }
 
-  if (itemContent?.type !== "hack") {
+  if (itemContent.type !== "hack") {
     return (
-      <ErrorMessage
-        title="Content is not a hack"
-        message="The selected content is not a hack and cannot be patched. Please ensure you access this tool via a valid patch link."
-      />
+      <ErrorMessage title="Content is not a hack">
+        The selected content is not a hack and cannot be patched. Please ensure
+        you access this tool via a valid patch link.
+      </ErrorMessage>
     );
   }
 
   if (!patchPath) {
     return (
-      <ErrorMessage
-        title="Missing Patch Information"
-        message="No patch file was specified. Please ensure you access this tool via a valid patch link."
-      />
+      <ErrorMessage title="Missing Patch Information">
+        No patch file was specified. Please ensure you access this tool via a
+        valid patch link.
+      </ErrorMessage>
     );
   }
 
-  return (
-    <div className="container mx-auto p-6 max-w-3xl mt-12">
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl tracking-tight">Rom Patcher</CardTitle>
-          <CardDescription>
-            {hackId
-              ? `Applying patch for ${itemContent.name}`
-              : "Select your ROM to apply the patch"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div id="rom-patcher-container" className="mt-4">
-            {!isScriptLoaded && (
-              <p className="text-muted-foreground text-sm animate-pulse">
-                Loading patcher engine...
-              </p>
-            )}
+  const isLoading = !isScriptLoaded || !isEngineReady;
 
-            {/* ROM-Patcher JS HTML Structure */}
-            <div
-              className="rom-patcher-row margin-bottom"
-              id="rom-patcher-row-file-rom"
+  return (
+    <div className="container mx-auto mt-12 max-w-3xl p-6">
+      <Card className="border-border/50 shadow-sm overflow-hidden">
+        <CardHeader className="space-y-3">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1.5">
+              <CardTitle className="text-2xl tracking-tight">
+                ROM Patcher
+              </CardTitle>
+              <CardDescription>
+                Applying patch for{" "}
+                <span className="text-foreground font-medium">
+                  {itemContent.name}
+                </span>
+              </CardDescription>
+            </div>
+            <Badge
+              variant={isLoading ? "secondary" : "default"}
+              className={cn(
+                "shrink-0 transition-colors",
+                isLoading && "animate-pulse",
+              )}
             >
-              <div className="text-right">
-                <label
-                  htmlFor="rom-patcher-input-file-rom"
-                  data-localize="yes"
-                >
-                  ROM file:
-                </label>
-              </div>
-              <div className="rom-patcher-container-input">
-                <input
-                  type="file"
-                  id="rom-patcher-input-file-rom"
-                  className="empty"
-                  disabled
+              {isLoading
+                ? (
+                  <>
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    Loading
+                  </>
+                )
+                : (
+                  <>
+                    <CheckCircle2 className="mr-1 h-3 w-3" />
+                    Ready
+                  </>
+                )}
+            </Badge>
+          </div>
+
+          {game && (
+            <div className="text-muted-foreground flex flex-wrap gap-2 text-xs">
+              <Badge variant="outline">{game.console}</Badge>
+              <Badge variant="outline">CRC32: {game.CRC32}</Badge>
+            </div>
+          )}
+        </CardHeader>
+
+        <CardContent>
+          <div id={CONTAINER_ID} className="space-y-4">
+            <div>
+              <p className="mb-2 text-sm font-semibold">
+                Select an unmodified{" "}
+                <span className="text-primary">{game?.name}</span> ROM
+              </p>
+              <p className="text-muted-foreground mb-3 text-xs">
+                Your ROM stays in your browser — nothing is uploaded.
+              </p>
+
+              <label
+                htmlFor="rom-patcher-input-file-rom"
+                className={cn(
+                  "group border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50 relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-8 transition-colors",
+                  selectedFileName && "border-primary/40 bg-primary/5",
+                )}
+              >
+                <Upload
+                  className={cn(
+                    "h-6 w-6 transition-colors",
+                    selectedFileName
+                      ? "text-primary"
+                      : "text-muted-foreground group-hover:text-primary",
+                  )}
                 />
-              </div>
-            </div>
-            <div
-              className="margin-bottom text-selectable text-mono text-muted"
-              id="rom-patcher-rom-info"
-            >
-              <div className="rom-patcher-row">
-                <div className="text-right">CRC32:</div>
-                <div className="text-truncate">
-                  <span id="rom-patcher-span-crc32" />
+                <div className="text-center">
+                  <p className="text-sm font-medium">
+                    {selectedFileName ?? "Drop ROM here or click to browse"}
+                  </p>
+                  <p className="text-muted-foreground mt-0.5 text-xs">
+                    {selectedFileName
+                      ? "Click to choose a different file"
+                      : "Validation runs locally"}
+                  </p>
                 </div>
-              </div>
-              <div className="rom-patcher-row">
-                <div className="text-right">MD5:</div>
-                <div className="text-truncate">
-                  <span id="rom-patcher-span-md5" />
-                </div>
-              </div>
-              <div className="rom-patcher-row">
-                <div className="text-right">SHA-1:</div>
-                <div className="text-truncate">
-                  <span id="rom-patcher-span-sha1" />
-                </div>
-              </div>
-              <div className="rom-patcher-row" id="rom-patcher-row-info-rom">
-                <div className="text-right">ROM:</div>
-                <div className="text-truncate">
-                  <span id="rom-patcher-span-rom-info" />
-                </div>
-              </div>
-            </div>
-            <div
-              className="rom-patcher-row margin-bottom"
-              id="rom-patcher-row-file-patch"
-            >
-              <div className="text-right">
-                <label
-                  htmlFor="rom-patcher-input-file-patch"
-                  data-localize="yes"
-                >
-                  Patch file:
-                </label>
-              </div>
-              <div className="rom-patcher-container-input">
-                <select id="rom-patcher-select-patch" />
-              </div>
-            </div>
-            <div
-              className="rom-patcher-row margin-bottom"
-              id="rom-patcher-row-patch-description"
-            >
-              <div
-                className="text-right text-mono text-muted"
-                data-localize="yes"
-              >
-                Description:
-              </div>
-              <div
-                className="text-truncate"
-                id="rom-patcher-patch-description"
+              </label>
+
+              <input
+                type="file"
+                id="rom-patcher-input-file-rom"
+                className="sr-only"
+                onChange={handleFileChange}
+                disabled={isLoading}
               />
             </div>
-            <div
-              className="rom-patcher-row margin-bottom text-selectable text-mono text-muted"
-              id="rom-patcher-row-patch-requirements"
-            >
-              <div
-                className="text-right text-mono"
-                id="rom-patcher-patch-requirements-type"
-              >
-                ROM requirements:
-              </div>
-              <div
-                className="text-truncate"
-                id="rom-patcher-patch-requirements-value"
-              />
+
+            <div className="hidden">
+              <select id="rom-patcher-select-patch" />
             </div>
-            <div className="text-center" id="rom-patcher-row-apply">
-              <div
-                id="rom-patcher-row-error-message"
-                className="margin-bottom"
-              >
-                <span id="rom-patcher-error-message" />
-              </div>
-              <button
-                id="rom-patcher-button-apply"
-                data-localize="yes"
-                disabled
-              >
-                Apply patch
-              </button>
-            </div>
+
+            {romValidationError && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Invalid ROM</AlertTitle>
+                <AlertDescription className="whitespace-pre-line">
+                  {romValidationError}
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </CardContent>
+
+        <CardFooter className="bg-muted/20 border-t flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-muted-foreground text-xs">
+            Once validated, your patched ROM will download automatically.
+          </p>
+          <Button
+            id="rom-patcher-button-apply"
+            data-localize="yes"
+            disabled
+            className="gap-2"
+          >
+            <FileDown className="h-4 w-4" />
+            Download {itemContent.name}
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   );
