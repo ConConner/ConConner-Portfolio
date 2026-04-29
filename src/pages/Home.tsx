@@ -72,7 +72,7 @@ export default function Home() {
       <Separator className="max-w-3xl" />
 
       {/* Quote */}
-      <section className="px-6 py-24 md:px-12">
+      <section className="px-6 py-48 md:px-12">
         <blockquote className="mx-auto max-w-2xl border-l-2 pl-6 text-left text-xl italic text-muted-foreground">
           &quot;The last Metroid is in captivity. The galaxy is at peace...
           until someone decides to mod it.&quot;
@@ -80,8 +80,10 @@ export default function Home() {
       </section>
 
       {/* Timeline */}
-      <section className="w-full px-6 py-16 md:px-12">
-        <h2 className="mb-12 text-2xl font-semibold">Timeline</h2>
+      <section className="w-full px-6 pb-16 md:px-12">
+        <h2 className="mb-12 text-3xl font-semibold">
+          What I made, when and what I learned
+        </h2>
         <Timeline items={timelineItems} />
       </section>
     </div>

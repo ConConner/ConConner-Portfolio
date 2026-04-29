@@ -125,8 +125,11 @@ function TimelineCardInner({
           )}
         >
           <Badge variant="secondary">{formatDate(item.date)}</Badge>
-          {item.source === "content" && <Badge variant="outline">Project
-          </Badge>}
+          {item.source === "content" && (
+            <Badge variant="outline">
+              Project
+            </Badge>
+          )}
         </ItemHeader>
         <ItemTitle className="text-base leading-tight">{item.name}</ItemTitle>
       </ItemContent>
@@ -194,7 +197,7 @@ function TimelineCard(props: TimelineCardProps) {
                 size="sm"
                 variant="secondary"
                 onClick={handleToggle}
-                className="h-7 px-2 text-xs"
+                className="h-7 px-2 text-xs cursor-pointer"
               >
                 {expanded ? "Show less" : "Read more"}
               </Button>

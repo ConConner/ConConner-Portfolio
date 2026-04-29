@@ -13,6 +13,12 @@
       "description": "Launched ConConner's Crazy Content with all of my Metroid hacks and tools. My content was intially only hosted on a different website. After a lack of backups almost erased my projects from the internet, I decided to create my own hosting site."
     },
     {
+      "id": "learning-cs",
+      "date": "2022-03-27",
+      "name": "Learning C#",
+      "description": "During development of ConCon's MapMapper I quickly realised how limiting my current tech stack was. Gamemaker Studio might prove as a good engine to make games, but it is very bad for Programs with a complex UI. Therefore, I started learning C# with Windows Forms, a framework actually designed for Desktop Applications."
+    },
+    {
       "id": "metroid-modding-start",
       "date": "2017-12-06",
       "name": "First Steps in ROM-Hacking",

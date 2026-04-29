@@ -163,7 +163,9 @@
                     "path": "https://github.com/LAMP-Platform/LAMP/releases",
                     "date": ""
                 }
-            ]
+            ],
+
+            "date": "2022-08-24"
         },
 
         {
@@ -263,7 +265,7 @@
             "game": "zm mf",
             "name": "MAGE Themes",
             "authors": ["Biospark", "Conner"],
-            "description": "Metroid Advance Game Editor (MAGE) is a comprehensive hacking utility for Metroid Fusion and Metroid Zero Mission created by biospark. It is a .NET 3.0 application written in C#. MAGE Themes is a modification of the original MAGE 1.4 source code created by ConConner. It is a .NET 6.0 application. Currently both versions are only compatible with the North American (U) version of each game.",
+            "description": "MAGE Themes is a fork and continuation of the Metroid Advance Game Editor (MAGE) created by Biospark. MAGE Themes offers many new quality of life improvements, new editors and uses a modern .NET Framework. Initially it started out as a simple attempt to add Dark Mode to MAGE after Biospark released the source code. After adding Dark Mode I kept adding small new features, usually small things that I noticed were missing during my prior usage of MAGE.\n\nMAGE Themes has now grown to be the recommended editor of choice for modding Metroid: Zero Mission and Metroid: Fusion. Once you have used MAGE Themes you do not want to go back to the old MAGE.",
         
             "images": ["/data/images/magethemes/title.png"],
             "downloads": 
@@ -273,7 +275,9 @@
                     "path": "https://github.com/ConConner/MAGE-Themes/releases/latest",
                     "date": ""
                 }
-            ]
+            ],
+
+            "date": "2023-08-17"
         },
 
         {
