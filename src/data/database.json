@@ -10,7 +10,7 @@
             "authors": ["Conner"],
             "description": "As part of a One-Week-Halloween-Contest I created this Zero Mission hack as a spiritual prequel to Metroid: Spooky Mission and Spooky Mission 2. This is the first hack I have created with the use of MAGE Themes.\n\nExplore the ancient past of Spooky Isle. Samus is stranded on the planet after her ship mysteriously disappeared. Search for your ship in a vast world.",
 
-            "images": ["/data/images/spooky-origins/caves.png", "/data/images/spooky-origins/fields.png", "/data/images/spooky-origins/forest-out.png", "/data/images/spooky-origins/forest-out.png"],
+            "images": ["/data/images/spooky-origins/caves.png", "/data/images/spooky-origins/fields.png", "/data/images/spooky-origins/forest-out.png", "/data/images/spooky-origins/forest-in.png"],
             "downloads": 
             [
                 {
