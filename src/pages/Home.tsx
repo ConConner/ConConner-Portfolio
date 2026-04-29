@@ -2,11 +2,10 @@
 import { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageMarquee } from "@/components/ImageMarquee";
-import { getAllContent } from "@/data/db";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-
-const TIMELINE_YEARS = [2024, 2023, 2022] as const;
+import { Timeline } from "@/components/Timeline";
+import { getAllContent, getUnifiedTimeline } from "@/data/db";
 
 const HeroBlobs = memo(function HeroBlobs() {
   return (
@@ -26,6 +25,7 @@ export default function Home() {
     [navigate],
   );
 
+  const timelineItems = getUnifiedTimeline();
   const handleViewAll = useCallback(() => navigate("/projects"), [navigate]);
 
   return (
@@ -35,7 +35,7 @@ export default function Home() {
         <HeroBlobs />
         <div className="relative">
           <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-            ConConners Crazy Content
+            ConConner's Crazy Content
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground md:text-xl">
             Metroid-inspired projects, experiments, and things built along the
@@ -80,22 +80,9 @@ export default function Home() {
       </section>
 
       {/* Timeline */}
-      <section className="px-6 py-16 md:px-12">
+      <section className="w-full px-6 py-16 md:px-12">
         <h2 className="mb-12 text-2xl font-semibold">Timeline</h2>
-        <ol className="relative mx-auto max-w-2xl border-l pl-8 text-left">
-          {TIMELINE_YEARS.map((year) => (
-            <li key={year} className="relative mb-10 last:mb-0">
-              <span
-                aria-hidden
-                className="absolute -left-[2.1rem] top-1.5 h-3 w-3 rounded-full bg-primary"
-              />
-              <span className="text-sm font-medium text-muted-foreground">
-                {year}
-              </span>
-              <p className="mt-1">Project or milestone placeholder</p>
-            </li>
-          ))}
-        </ol>
+        <Timeline items={timelineItems} />
       </section>
     </div>
   );

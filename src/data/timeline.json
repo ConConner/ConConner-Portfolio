@@ -1,0 +1,22 @@
+{
+  "entries": [
+    {
+      "id": "site-rework",
+      "date": "2026-04-28",
+      "name": "New Website",
+      "description": "The desire to talk about more things than just Metroid, wanting to host more different types of projects and a growing need for newer features lead me to completely rewrite the website."
+    },
+    {
+      "id": "site-launch",
+      "date": "2024-10-01",
+      "name": "Website Launch",
+      "description": "Launched ConConner's Crazy Content with all of my Metroid hacks and tools. My content was intially only hosted on a different website. After a lack of backups almost erased my projects from the internet, I decided to create my own hosting site."
+    },
+    {
+      "id": "metroid-modding-start",
+      "date": "2017-12-06",
+      "name": "First Steps in ROM-Hacking",
+      "description": "I used to dream about making my own worlds in the style of the Metroid series. In late 2017 I discovered a tool that streamlined the creation of these worlds by directly modifying the games Metroid: Zero Mission and Metroid: Fusion."
+    }
+  ]
+}
