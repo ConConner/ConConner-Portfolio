@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Timeline } from "@/components/Timeline";
 import { getAllContent, getUnifiedTimeline } from "@/data/db";
+import { ContentMetrics } from "@/components/ContentMetrics";
 
 const HeroBlobs = memo(function HeroBlobs() {
   return (
@@ -60,11 +61,7 @@ export default function Home() {
           pauseOnHover
           onImageClick={handleImageClick}
         />
-      </section>
-
-      {/* Projects Button */}
-      <section className="px-6 py-8 md:px-12">
-        <Button size="lg" onClick={handleViewAll}>
+        <Button size="lg" onClick={handleViewAll} className="mt-8">
           View All Projects
         </Button>
       </section>
@@ -73,17 +70,20 @@ export default function Home() {
 
       {/* Quote */}
       <section className="px-6 py-48 md:px-12">
-        <blockquote className="mx-auto max-w-2xl border-l-2 pl-6 text-left text-xl italic text-muted-foreground">
+        <blockquote className="mx-auto max-w-2xl border-l-2 pl-6 text-left text-2xl italic text-muted-foreground">
           &quot;The last Metroid is in captivity. The galaxy is at peace...
           until someone decides to mod it.&quot;
         </blockquote>
       </section>
 
-      {/* Timeline */}
-      <section className="w-full px-6 pb-16 md:px-12">
-        <h2 className="mb-12 text-3xl font-semibold">
+      <Separator className="max-w-3xl" />
+
+      {/* Timeline & Metrics*/}
+      <section className="w-full px-6 py-16 md:px-12 flex flex-col gap-8">
+        <h2 className="text-3xl font-semibold">
           What I made, when and what I learned
         </h2>
+        <ContentMetrics content={content} />
         <Timeline items={timelineItems} />
       </section>
     </div>

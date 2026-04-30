@@ -16,13 +16,21 @@
       "id": "learning-cs",
       "date": "2022-03-27",
       "name": "Learning C#",
-      "description": "During development of ConCon's MapMapper I quickly realised how limiting my current tech stack was. Gamemaker Studio might prove as a good engine to make games, but it is very bad for Programs with a complex UI. Therefore, I started learning C# with Windows Forms, a framework actually designed for Desktop Applications."
+      "description": "During development of ConCon's MapMapper I quickly realised how limiting my current tech stack was. Gamemaker Studio might prove as a good engine to make games, but it is very bad for Programs with a complex UI. Therefore, I started learning C# with Windows Forms, a framework actually designed for Desktop Applications.",
+      "image": "/data/images/timeline-posts/cs-logo.png"
+    },
+    {
+      "id": "gamemaker",
+      "date": "2019-01-04",
+      "name": "Programming with Gamemaker Studio",
+      "description": "Before I only ever used visual programming software, since I was scared to actually learn coding. Since my primary focus was always on making games, I decided to give programming with Gamemaker Studio a shot. While none of my prototypes ever really got finished, Gamemaker has taught me everything I needed to know to start programming."
     },
     {
       "id": "metroid-modding-start",
       "date": "2017-12-06",
       "name": "First Steps in ROM-Hacking",
-      "description": "I used to dream about making my own worlds in the style of the Metroid series. In late 2017 I discovered a tool that streamlined the creation of these worlds by directly modifying the games Metroid: Zero Mission and Metroid: Fusion."
+      "description": "I used to dream about making my own worlds in the style of the Metroid series. In late 2017 I discovered a tool that streamlined the creation of these worlds by directly modifying the games Metroid: Zero Mission and Metroid: Fusion.\nThe picture is from my first room ever created.",
+      "image": "/data/images/timeline-posts/first-room.png"
     }
   ]
 }
