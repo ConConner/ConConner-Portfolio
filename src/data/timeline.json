@@ -13,6 +13,12 @@
       "description": "Launched ConConner's Crazy Content with all of my Metroid hacks and tools. My content was intially only hosted on a different website. After a lack of backups almost erased my projects from the internet, I decided to create my own hosting site."
     },
     {
+      "id": "studying-cs",
+      "date": "2023-10-01",
+      "name": "Studying Computer Science",
+      "description": "After finishing school, it was clear to me, that I wanted to continue working on and with computers. Therefore, in late 2023 I started studying computer science!"
+    },
+    {
       "id": "learning-cs",
       "date": "2022-03-27",
       "name": "Learning C#",
