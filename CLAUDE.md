@@ -52,7 +52,7 @@ The Supabase Postgres schema is declared in the repo, never hand-edited in the S
 
 - `supabase/schemas/*.sql` — the declarative source of truth for the `public` schema (tables, the `is_admin()` function, RLS policies, grants). Files load in filename order, so they're number-prefixed.
 - `supabase/migrations/*.sql` — generated (or, for storage, hand-written) migrations. This is what actually gets applied to prod.
-- `.github/workflows/supabase-deploy.yml` — on push to `main` touching `supabase/migrations/**`, links the project and runs `supabase db push`. Requires repo secrets `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID`.
+- `.github/workflows/supabase-deploy.yml` — on push to `main` touching `supabase/migrations/**`, runs `supabase db push --db-url` against the pooled connection string. Requires the repo secret `SUPABASE_DB_URL` (Supavisor session pooler connection string, not the direct `db.<ref>.supabase.co` host — GitHub-hosted runners are IPv4-only and the direct host is IPv6-only).
 
 Workflow for a schema change (Docker must be running; the CLI is a devDependency, so use `npx`/npm scripts, not a global install):
 
