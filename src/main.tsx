@@ -11,6 +11,12 @@ import { ThemeProvider } from "./components/theme-provider";
 import { ContentDetailRoute } from "./routes/ContentDetailRoute";
 import { getAllContent, getAllGames, initDb } from "./data/db";
 import PatcherPage from "./pages/PatcherPage";
+import { AuthGuard } from "@/admin/AuthGuard";
+import AdminLogin from "@/pages/admin/AdminLogin";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminContentForm from "@/pages/admin/AdminContentForm";
+import AdminTimeline from "@/pages/admin/AdminTimeline";
+import AdminGames from "@/pages/admin/AdminGames";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 
@@ -50,6 +56,49 @@ root.render(
               element={<ContentDetailRoute games={games} content={content} />}
             />
             <Route path="/patch/:hackId" element={<PatcherPage />} />
+
+            {/* Admin, deliberately not linked from the public nav. */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin"
+              element={
+                <AuthGuard>
+                  <AdminDashboard />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/admin/content/new"
+              element={
+                <AuthGuard>
+                  <AdminContentForm />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/admin/content/:id/edit"
+              element={
+                <AuthGuard>
+                  <AdminContentForm />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/admin/timeline"
+              element={
+                <AuthGuard>
+                  <AdminTimeline />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/admin/games"
+              element={
+                <AuthGuard>
+                  <AdminGames />
+                </AuthGuard>
+              }
+            />
           </Routes>
         </Layout>
       </ThemeProvider>

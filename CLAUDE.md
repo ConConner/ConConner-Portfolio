@@ -48,6 +48,18 @@ Routes are declared centrally in `src/main.tsx` (no nested/lazy routing): `/`, `
 
 Built on shadcn/ui (`components.json`: style `radix-sera`, base color `olive`, icon library `@remixicon/react`) with Radix primitives under `src/components/ui/`. Path alias `@/*` → `src/*` (defined in `vite.config.ts` and `tsconfig.app.json`). Tailwind v4 via `@tailwindcss/vite` (config lives in `src/index.css`, not a separate `tailwind.config.js`). Theming (light/dark) goes through `theme-provider.tsx` + `mode-toggle.tsx`, wrapped around the whole app in `main.tsx`.
 
+### Admin panel
+
+`/admin` is a private CRUD UI for the Supabase content, deliberately not linked from the public nav. Routes are registered in `main.tsx` alongside the public ones: `/admin/login`, `/admin` (content list), `/admin/content/new`, `/admin/content/:id/edit`, `/admin/timeline`, `/admin/games`.
+
+- `src/admin/auth.ts` — GitHub OAuth sign-in and the `ADMIN_EMAIL` constant. The email check in `AuthGuard` is only defence in depth for the UI; the real gate is the `is_admin()` RLS policies, which reject writes from any other account even via direct `supabase-js` calls. `is_admin()` compares `auth.email()`, so the GitHub account used to sign in must have that address as its primary verified email.
+- `src/admin/AuthGuard.tsx` wraps every admin route; `useSession.ts` / `useDbRefresh.ts` are separate modules only because co-locating hooks with components trips the `react-refresh/only-export-components` lint rule.
+- `src/admin/storage.ts` — uploads. Images are re-encoded to WebP client-side via `canvas.toBlob(..., "image/webp")` (no dependency needed) so everything uploaded matches the migrated assets; patch files are uploaded untouched as binary.
+- After any successful write the page calls `initDb()` again rather than patching local state — one admin, tiny dataset.
+- `content_images` / `content_downloads` rows have generated ids, so saving a content item deletes and re-inserts both lists rather than trying to upsert them. Deleting a content item cascades to both; the uploaded files stay in Storage on purpose, so old links keep working.
+
+Auth setup that can't be scripted: register a GitHub OAuth App (callback `https://<project-ref>.supabase.co/auth/v1/callback`), put its client id/secret into Supabase Auth → Providers → GitHub, and add the site + `localhost` URLs under Auth → URL Configuration.
+
 ### Database schema (Supabase)
 
 The Supabase Postgres schema is declared in the repo, never hand-edited in the Supabase dashboard:
