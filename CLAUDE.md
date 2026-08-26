@@ -19,18 +19,20 @@ There is no test suite/runner configured in this project.
 
 ### Content is data-driven, not hardcoded
 
-All portfolio content (ROM hacks, tools, games, timeline events) lives in JSON, not component code:
+All portfolio content (ROM hacks, tools, games, timeline events) comes from Supabase, not component code:
 
-- `src/data/database.json` — the `content` array (hacks/tools, each with `id`, `type`, `game`, `authors`, `description`, `images[]`, `downloads[]`) and a `games` map keyed by game id (`name`, `console`, `SHA-1`, `CRC32`).
-- `src/data/timeline.json` — standalone timeline entries not tied to a content item.
-- `src/data/types.ts` — the `ContentItem` / `Game` / `TimelineEntry` shapes those files must conform to.
-- `src/data/db.ts` — the only place that reads the JSON. All lookups (`getContentById`, `getGameById`, `getContentByType`, etc.) go through here; components never import the JSON directly. `getUnifiedTimeline()` merges `content` (derives a date from `item.date` or the earliest download) and `timeline.json` entries into one reverse-chronological feed.
+- `src/data/types.ts` — the `ContentItem` / `Game` / `TimelineEntry` shapes everything is mapped into.
+- `src/data/db.ts` — the only place that talks to Supabase for content. `initDb()` runs once at bootstrap, fetches `content_items` (with its `content_images` / `content_downloads` rows), `games` and `timeline_entries`, and maps them into the `types.ts` shapes held in module-level state. Every getter (`getContentById`, `getGameById`, `getContentByType`, …) then reads that in-memory copy **synchronously**, so no page needs a loading state. `getUnifiedTimeline()` merges content (deriving a date from `item.date` or the earliest download) and timeline entries into one reverse-chronological feed.
+- `src/lib/supabase.ts` — the browser client, built from `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` (see `.env.example`).
+- `src/data/database.json` / `src/data/timeline.json` — the pre-Supabase content, kept only as the input to `scripts/migrate-to-supabase.ts` and as a fallback until the live site is confirmed working.
 
-When adding a new hack/tool, add an entry to `database.json` (and a `games` entry if it targets a new game), not a new component or route — `Content.tsx` and the detail route render from the data automatically. Static assets referenced by `images`/`downloads` paths live under `public/data/` (`images/`, `patches/`, `logos/`, `files/`, organized per-hack by id).
+Row shape differs from the JSON in two places, both handled in `db.ts`: `game_ids` is a `text[]` (an item can target several games) that maps back to the space-separated `ContentItem.game` string, and `content_downloads.date` is free-form `text` because real entries include partial dates (`"2018-12"`) and empty strings (external release links).
+
+`scripts/migrate-to-supabase.ts` (`npm run migrate:supabase`, `-- --dry-run` to preview) is the one-time import: it uploads `public/data/images/**` to the `content-images` bucket re-encoded as WebP, `public/data/{patches,files}/**` to `content-patches` as-is, and inserts the rows with asset paths rewritten to public Storage URLs. External download links (GitHub, nightly.link) are left untouched. It needs `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` and is safe to re-run.
 
 ### Routing
 
-Routes are declared centrally in `src/main.tsx` (no nested/lazy routing): `/`, `/projects`, `/projects/:id`, `/patch/:hackId`. `getAllContent()`/`getAllGames()` are called once at module load in `main.tsx` and passed down as props (e.g. into `ContentDetailRoute`), rather than re-fetched per-page.
+Routes are declared centrally in `src/main.tsx` (no nested/lazy routing): `/`, `/projects`, `/projects/:id`, `/patch/:hackId`. `main.tsx` renders `Bootstrap` (loading/error), `await initDb()`s, then mounts the router — so `getAllContent()`/`getAllGames()` can still be called once at that point and passed down as props (e.g. into `ContentDetailRoute`), rather than re-fetched per-page.
 
 ### The ROM patcher is a wrapped third-party vanilla-JS engine
 

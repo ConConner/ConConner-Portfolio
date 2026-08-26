@@ -1,6 +1,5 @@
 // app/data/db.ts
-import database from "./database.json";
-import timeline from "./timeline.json";
+import { supabase } from "@/lib/supabase";
 import type {
   ContentItem,
   Database,
@@ -10,8 +9,93 @@ import type {
   UnifiedTimelineItem,
 } from "./types";
 
-const db: Database = database;
-const tl: TimelineDatabase = timeline;
+// Content is fetched once at app bootstrap (see main.tsx) and kept here, so
+// every getter below stays synchronous and callers need no loading state.
+const db: Database = { content: [], games: {} };
+const tl: TimelineDatabase = { entries: [] };
+
+interface ContentItemRow {
+  id: string;
+  type: string;
+  game_ids: string[];
+  name: string;
+  authors: string[];
+  description: string;
+  date: string | null;
+  content_images: { url: string; position: number }[];
+  content_downloads: { name: string; path: string; date: string }[];
+}
+
+interface GameRow {
+  id: string;
+  name: string;
+  console: string;
+  sha1: string;
+  crc32: string;
+}
+
+/**
+ * Loads the database into memory. Must resolve before anything calls the
+ * getters below. Throws if any query fails, so the caller can show an error
+ * instead of rendering an empty site.
+ */
+export const initDb = async (): Promise<void> => {
+  const [content, games, timeline] = await Promise.all([
+    supabase
+      .from("content_items")
+      .select(
+        "id, type, game_ids, name, authors, description, date, content_images(url, position), content_downloads(name, path, date)",
+      )
+      .order("position")
+      .order("position", { referencedTable: "content_images" })
+      // No curated order on downloads; id keeps them in the order they were
+      // inserted, which is the order they were authored in.
+      .order("id", { referencedTable: "content_downloads" }),
+    supabase.from("games").select("id, name, console, sha1, crc32"),
+    supabase
+      .from("timeline_entries")
+      .select("id, date, name, description, image")
+      .order("date", { ascending: false }),
+  ]);
+
+  const error = content.error ?? games.error ?? timeline.error;
+  if (error) throw new Error(`Failed to load content: ${error.message}`);
+
+  db.content = (content.data as ContentItemRow[]).map((row) => ({
+    id: row.id,
+    type: row.type,
+    // Stored as an array; the rest of the app treats it as the original
+    // space-separated string ("zm mf").
+    game: row.game_ids.length > 0 ? row.game_ids.join(" ") : null,
+    name: row.name,
+    authors: row.authors,
+    description: row.description,
+    images: row.content_images.map((image) => image.url),
+    downloads: row.content_downloads.map((download) => ({
+      name: download.name,
+      path: download.path,
+      date: download.date,
+    })),
+    date: row.date ?? undefined,
+  }));
+
+  db.games = Object.fromEntries(
+    (games.data as GameRow[]).map((row) => [
+      row.id,
+      {
+        name: row.name,
+        console: row.console,
+        "SHA-1": row.sha1,
+        CRC32: row.crc32,
+      } satisfies Game,
+    ]),
+  );
+
+  tl.entries = (timeline.data as TimelineEntry[]).map((row) => ({
+    ...row,
+    image: row.image || undefined,
+  }));
+};
 
 export const getAllContent = (): ContentItem[] => db.content;
 

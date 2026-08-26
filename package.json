@@ -10,11 +10,13 @@
     "preview": "vite preview",
     "db:diff": "supabase db schema declarative sync --no-apply -f",
     "db:reset": "supabase db reset",
-    "db:push": "supabase db push --linked"
+    "db:push": "supabase db push --linked",
+    "migrate:supabase": "tsx scripts/migrate-to-supabase.ts"
   },
   "dependencies": {
     "@fontsource-variable/oxanium": "^5.2.8",
     "@remixicon/react": "^4.9.0",
+    "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/vite": "^4.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -39,7 +41,9 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "sharp": "^0.35.4",
     "supabase": "^2.115.0",
+    "tsx": "^4.23.12",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.9"
