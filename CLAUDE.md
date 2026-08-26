@@ -45,3 +45,22 @@ Routes are declared centrally in `src/main.tsx` (no nested/lazy routing): `/`, `
 ### UI components
 
 Built on shadcn/ui (`components.json`: style `radix-sera`, base color `olive`, icon library `@remixicon/react`) with Radix primitives under `src/components/ui/`. Path alias `@/*` → `src/*` (defined in `vite.config.ts` and `tsconfig.app.json`). Tailwind v4 via `@tailwindcss/vite` (config lives in `src/index.css`, not a separate `tailwind.config.js`). Theming (light/dark) goes through `theme-provider.tsx` + `mode-toggle.tsx`, wrapped around the whole app in `main.tsx`.
+
+### Database schema (Supabase)
+
+The Supabase Postgres schema is declared in the repo, never hand-edited in the Supabase dashboard:
+
+- `supabase/schemas/*.sql` — the declarative source of truth for the `public` schema (tables, the `is_admin()` function, RLS policies, grants). Files load in filename order, so they're number-prefixed.
+- `supabase/migrations/*.sql` — generated (or, for storage, hand-written) migrations. This is what actually gets applied to prod.
+- `.github/workflows/supabase-deploy.yml` — on push to `main` touching `supabase/migrations/**`, links the project and runs `supabase db push`. Requires repo secrets `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID`.
+
+Workflow for a schema change (Docker must be running; the CLI is a devDependency, so use `npx`/npm scripts, not a global install):
+
+1. Edit the relevant file under `supabase/schemas/`.
+2. `npm run db:diff -- <migration_name>` (wraps `supabase db schema declarative sync --no-apply -f <name>`) — spins up a shadow Postgres, diffs the declarative tree against `supabase/migrations/`, and writes a new migration.
+3. Review the generated SQL, then `npm run db:reset` to verify the whole chain applies cleanly locally.
+4. Commit `supabase/schemas/` **and** the generated migration, push to `main` — the Action applies it to prod.
+
+Two things the declarative planner does *not* manage, which therefore live in hand-written migrations (see `20260826151400_storage_buckets.sql`): DML (declarative files are rejected outright if they insert rows, which rules out `storage.buckets` inserts) and anything outside the `public` schema (e.g. policies on `storage.objects`, owned by `supabase_storage_admin`).
+
+Local ports in `supabase/config.toml` are shifted into the 544xx range (API 54421, db 54422) so this project's local stack doesn't collide with another Supabase project running on the default 543xx ports.
