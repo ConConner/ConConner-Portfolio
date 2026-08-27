@@ -1,10 +1,15 @@
 -- Only Conner's account may write. Reads are public.
+--
+-- Both addresses are the same person: Supabase takes the account email from
+-- the *primary verified* email on the GitHub profile, which is the gmail one,
+-- while conner@conconner.com is the address the site is branded with. Keep
+-- src/admin/auth.ts's ADMIN_EMAILS in sync with this list.
 create or replace function public.is_admin()
 returns boolean
 language sql
 stable
 as $$
-  select auth.email() = 'conner@conconner.com';
+  select auth.email() = any (array['conner@conconner.com', 'egal3d@gmail.com']);
 $$;
 
 alter table public.games enable row level security;

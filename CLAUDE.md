@@ -12,6 +12,8 @@ Conner's personal portfolio site — a showcase for GBA/SNES ROM hacks and tools
 - `npm run build` — typecheck (`tsc -b`) then `vite build`
 - `npm run lint` — ESLint over the whole project
 - `npm run preview` — serve the production build locally
+- `npm run db:seed` — refresh `supabase/seeds/10_content.sql` from the live content
+- `npm run db:reset` — rebuild the local database from migrations + seeds
 
 There is no test suite/runner configured in this project.
 
@@ -52,13 +54,26 @@ Built on shadcn/ui (`components.json`: style `radix-sera`, base color `olive`, i
 
 `/admin` is a private CRUD UI for the Supabase content, deliberately not linked from the public nav. Routes are registered in `main.tsx` alongside the public ones: `/admin/login`, `/admin` (content list), `/admin/content/new`, `/admin/content/:id/edit`, `/admin/timeline`, `/admin/games`.
 
-- `src/admin/auth.ts` — GitHub OAuth sign-in and the `ADMIN_EMAIL` constant. The email check in `AuthGuard` is only defence in depth for the UI; the real gate is the `is_admin()` RLS policies, which reject writes from any other account even via direct `supabase-js` calls. `is_admin()` compares `auth.email()`, so the GitHub account used to sign in must have that address as its primary verified email.
-- `src/admin/AuthGuard.tsx` wraps every admin route; `useSession.ts` / `useDbRefresh.ts` are separate modules only because co-locating hooks with components trips the `react-refresh/only-export-components` lint rule.
+- `src/admin/auth.ts` — GitHub OAuth sign-in and the `ADMIN_EMAILS` list. The email check in `AuthGuard` is only defence in depth for the UI; the real gate is the `is_admin()` RLS policies, which reject writes from any other account even via direct `supabase-js` calls. `is_admin()` compares `auth.email()` against the same two addresses, so keep the SQL and the TS list in sync. Two addresses because Supabase takes the account email from the **primary verified** email on the GitHub profile (`egal3d@gmail.com`), not from whichever verified address the site is branded with (`conner@conconner.com`).
+- `src/admin/AuthGuard.tsx` wraps every admin route and is the only place that decides between the panel and the "not authorised" screen — `/admin/login` redirects any session to `/admin` rather than judging it itself. `useSession.ts` / `useDbRefresh.ts` are separate modules only because co-locating hooks with components trips the `react-refresh/only-export-components` lint rule.
 - `src/admin/storage.ts` — uploads. Images are re-encoded to WebP client-side via `canvas.toBlob(..., "image/webp")` (no dependency needed) so everything uploaded matches the migrated assets; patch files are uploaded untouched as binary.
 - After any successful write the page calls `initDb()` again rather than patching local state — one admin, tiny dataset.
 - `content_images` / `content_downloads` rows have generated ids, so saving a content item deletes and re-inserts both lists rather than trying to upsert them. Deleting a content item cascades to both; the uploaded files stay in Storage on purpose, so old links keep working.
 
 Auth setup that can't be scripted: register a GitHub OAuth App (callback `https://<project-ref>.supabase.co/auth/v1/callback`), put its client id/secret into Supabase Auth → Providers → GitHub, and add the site + `localhost` URLs under Auth → URL Configuration.
+
+### Running the whole thing locally
+
+`supabase start` + `npm run dev` gives a full local copy — local Postgres, local Auth, local Storage buckets — with `.env.local` pointing `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` at `http://127.0.0.1:54421`.
+
+Seeds live in `supabase/seeds/` (`sql_paths = ["./seeds/*.sql"]` in `config.toml`) and run on every `npm run db:reset`:
+
+- `00_local_users.sql` (committed) creates two password users, `conner@conconner.com` and `nonadmin@local.test`, both `localtest123`. The admin one deliberately reuses a real address from the `is_admin()` allowlist rather than a made-up local one, so local testing exercises the exact policy production runs and no test address ever ships in the allowlist. Its token columns are `''` rather than `null` — GoTrue scans them into plain strings and 500s otherwise.
+- `10_content.sql` (generated, gitignored) is a dump of the live content written by `npm run db:seed` (`scripts/seed-local-db.ts`). It reads through the anon key, so no service-role key is involved, and copies asset URLs verbatim — they keep pointing at the hosted Storage buckets, which are public, so images and patches resolve locally without downloading anything. It reads `SEED_SOURCE_SUPABASE_URL`/`SEED_SOURCE_SUPABASE_ANON_KEY` rather than the `VITE_` pair, which during local dev points at the local stack, and refuses to run if handed a loopback URL.
+
+`/admin/login` grows a password form under `import.meta.env.DEV` (verify with `npm run build && grep -r localtest123 dist/` — it isn't there) so the panel can be driven locally without a second GitHub OAuth App. To exercise the real OAuth redirect instead, uncomment the `[auth.external.github]` block in `supabase/config.toml` and follow the instructions above it.
+
+Note that files uploaded through the local admin panel go to the *local* Storage buckets, so their URLs only resolve while the local stack is up.
 
 ### Database schema (Supabase)
 

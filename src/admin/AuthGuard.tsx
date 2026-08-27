@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ADMIN_EMAIL, isAdminSession, signOut } from "./auth";
+import { isAdminSession, signOut } from "./auth";
 import { useSession } from "./useSession";
 
 export function AuthGuard({ children }: PropsWithChildren) {
@@ -20,8 +20,8 @@ export function AuthGuard({ children }: PropsWithChildren) {
       <div className="flex flex-col items-start gap-3 p-6">
         <h1 className="text-xl font-semibold">Not authorised</h1>
         <p className="text-muted-foreground">
-          Signed in as {session.user.email ?? "an unknown account"}. Only{" "}
-          {ADMIN_EMAIL} can edit this site.
+          Signed in as {session.user.email ?? "an unknown account"}, which is
+          not an admin account for this site.
         </p>
         <Button variant="outline" onClick={() => signOut()}>
           Sign out
