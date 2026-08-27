@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "db": "supabase start",
     "db:diff": "supabase db schema declarative sync --no-apply -f",
     "db:reset": "supabase db reset",
     "db:seed": "tsx scripts/seed-local-db.ts",
