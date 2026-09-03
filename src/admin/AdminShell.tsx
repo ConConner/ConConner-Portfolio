@@ -6,6 +6,7 @@ import { signOut } from "./auth";
 
 const SECTIONS = [
   { path: "/admin", label: "Content" },
+  { path: "/admin/blog", label: "Blog" },
   { path: "/admin/timeline", label: "Timeline" },
   { path: "/admin/games", label: "Games" },
 ] as const;

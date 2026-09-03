@@ -7,6 +7,8 @@ import { Bootstrap } from "@/components/Bootstrap";
 import { Layout } from "@/components/Layout";
 import Home from "@/pages/Home";
 import Content from "@/pages/Content";
+import Blog from "@/pages/Blog";
+import BlogPostPage from "@/pages/BlogPostPage";
 import { ThemeProvider } from "./components/theme-provider";
 import { ContentDetailRoute } from "./routes/ContentDetailRoute";
 import { getAllContent, getAllGames, initDb } from "./data/db";
@@ -17,6 +19,8 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminContentForm from "@/pages/admin/AdminContentForm";
 import AdminTimeline from "@/pages/admin/AdminTimeline";
 import AdminGames from "@/pages/admin/AdminGames";
+import AdminBlogList from "@/pages/admin/AdminBlogList";
+import AdminBlogForm from "@/pages/admin/AdminBlogForm";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 
@@ -56,6 +60,8 @@ root.render(
               element={<ContentDetailRoute games={games} content={content} />}
             />
             <Route path="/patch/:hackId" element={<PatcherPage />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogPostPage />} />
 
             {/* Admin, deliberately not linked from the public nav. */}
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -96,6 +102,30 @@ root.render(
               element={
                 <AuthGuard>
                   <AdminGames />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/admin/blog"
+              element={
+                <AuthGuard>
+                  <AdminBlogList />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/admin/blog/new"
+              element={
+                <AuthGuard>
+                  <AdminBlogForm />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/admin/blog/:id/edit"
+              element={
+                <AuthGuard>
+                  <AdminBlogForm />
                 </AuthGuard>
               }
             />

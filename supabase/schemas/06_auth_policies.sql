@@ -17,6 +17,7 @@ alter table public.content_items enable row level security;
 alter table public.content_images enable row level security;
 alter table public.content_downloads enable row level security;
 alter table public.timeline_entries enable row level security;
+alter table public.blog_posts enable row level security;
 -- Storage buckets and their storage.objects policies are not managed here:
 -- the declarative planner only manages the `public` schema, and
 -- storage.objects is owned by supabase_storage_admin. They live in the
@@ -45,4 +46,9 @@ create policy "content_downloads are admin writable" on public.content_downloads
 create policy "timeline_entries are publicly readable" on public.timeline_entries
   for select using (true);
 create policy "timeline_entries are admin writable" on public.timeline_entries
+  for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+create policy "blog_posts are publicly readable" on public.blog_posts
+  for select using (true);
+create policy "blog_posts are admin writable" on public.blog_posts
   for all to authenticated using (public.is_admin()) with check (public.is_admin());

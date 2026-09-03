@@ -1,6 +1,6 @@
 create table if not exists public.content_items (
   id text primary key,
-  type text not null check (type in ('hack', 'tool')),
+  type text not null check (type in ('hack', 'tool', 'project')),
   -- Space-separated in the JSON ("zm mf"), so an item can target several
   -- games. Stored as an array (like `authors`) and joined back into a single
   -- string by db.ts. No FK to games(id): the ids come from a fixed dropdown.

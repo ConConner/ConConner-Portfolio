@@ -6,7 +6,7 @@ export interface Download {
 
 export interface ContentItem {
   id: string;
-  type: "hack" | "tool" | string;
+  type: "hack" | "tool" | "project" | string;
   game: string | null;
   name: string;
   authors: string[];
@@ -46,6 +46,16 @@ export interface UnifiedTimelineItem {
   name: string;
   description: string;
   image?: string;
-  source: "content" | "timeline";
+  source: "content" | "timeline" | "blog";
   contentId?: string;
+  blogId?: string;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  coverImage?: string;
+  date: string;
 }

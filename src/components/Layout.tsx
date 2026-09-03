@@ -32,6 +32,7 @@ function useScrollRestoration() {
 const NAV_ITEMS = [
   { path: "/", label: "Home" },
   { path: "/projects", label: "Projects" },
+  { path: "/blog", label: "Blog" },
 ] as const;
 
 type NavItem = (typeof NAV_ITEMS)[number];

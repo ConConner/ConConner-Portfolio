@@ -5,12 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { Dices } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type FilterType = "all" | "hack" | "tool";
+type FilterType = "all" | "hack" | "tool" | "project";
 
 const filters: { label: string; value: FilterType }[] = [
   { label: "All", value: "all" },
   { label: "Games", value: "hack" },
   { label: "Tools", value: "tool" },
+  { label: "Other", value: "project" },
 ];
 
 function Content() {

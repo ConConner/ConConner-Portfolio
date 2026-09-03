@@ -40,7 +40,7 @@ const TimelineEntry = memo(function TimelineEntry({
   side,
   onClick,
 }: TimelineItemProps) {
-  const clickable = item.source === "content";
+  const clickable = item.source === "content" || item.source === "blog";
 
   const handleClick = useCallback(() => {
     if (clickable) onClick?.(item);
@@ -125,11 +125,8 @@ function TimelineCardInner({
           )}
         >
           <Badge variant="secondary">{formatDate(item.date)}</Badge>
-          {item.source === "content" && (
-            <Badge variant="outline">
-              Project
-            </Badge>
-          )}
+          {item.source === "content" && <Badge variant="outline">Project</Badge>}
+          {item.source === "blog" && <Badge variant="outline">Blog</Badge>}
         </ItemHeader>
         <ItemTitle className="text-base leading-tight">{item.name}</ItemTitle>
       </ItemContent>
@@ -176,9 +173,8 @@ function TimelineCard(props: TimelineCardProps) {
         <div className="space-y-2 p-3">
           <div className="flex items-center gap-2">
             <Badge variant="secondary">{formatDate(item.date)}</Badge>
-            {item.source === "content" && (
-              <Badge variant="outline">Project</Badge>
-            )}
+            {item.source === "content" && <Badge variant="outline">Project</Badge>}
+            {item.source === "blog" && <Badge variant="outline">Blog</Badge>}
           </div>
           <p className="text-sm font-medium leading-tight">{item.name}</p>
           {item.description && (
@@ -216,6 +212,8 @@ export const Timeline = memo(function Timeline({ items }: TimelineProps) {
     (item: UnifiedTimelineItem) => {
       if (item.source === "content" && item.contentId) {
         navigate(`/projects/${item.contentId}`);
+      } else if (item.source === "blog" && item.blogId) {
+        navigate(`/blog/${item.blogId}`);
       }
     },
     [navigate],

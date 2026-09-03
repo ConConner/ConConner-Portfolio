@@ -1,6 +1,7 @@
 // app/data/db.ts
 import { supabase } from "@/lib/supabase";
 import type {
+  BlogPost,
   ContentItem,
   Database,
   Game,
@@ -13,6 +14,7 @@ import type {
 // every getter below stays synchronous and callers need no loading state.
 const db: Database = { content: [], games: {} };
 const tl: TimelineDatabase = { entries: [] };
+const bp: { posts: BlogPost[] } = { posts: [] };
 
 interface ContentItemRow {
   id: string;
@@ -34,13 +36,22 @@ interface GameRow {
   crc32: string;
 }
 
+interface BlogPostRow {
+  id: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  cover_image: string | null;
+  date: string;
+}
+
 /**
  * Loads the database into memory. Must resolve before anything calls the
  * getters below. Throws if any query fails, so the caller can show an error
  * instead of rendering an empty site.
  */
 export const initDb = async (): Promise<void> => {
-  const [content, games, timeline] = await Promise.all([
+  const [content, games, timeline, blog] = await Promise.all([
     supabase
       .from("content_items")
       .select(
@@ -56,9 +67,13 @@ export const initDb = async (): Promise<void> => {
       .from("timeline_entries")
       .select("id, date, name, description, image")
       .order("date", { ascending: false }),
+    supabase
+      .from("blog_posts")
+      .select("id, title, excerpt, body, cover_image, date")
+      .order("date", { ascending: false }),
   ]);
 
-  const error = content.error ?? games.error ?? timeline.error;
+  const error = content.error ?? games.error ?? timeline.error ?? blog.error;
   if (error) throw new Error(`Failed to load content: ${error.message}`);
 
   db.content = (content.data as ContentItemRow[]).map((row) => ({
@@ -95,6 +110,15 @@ export const initDb = async (): Promise<void> => {
     ...row,
     image: row.image || undefined,
   }));
+
+  bp.posts = (blog.data as BlogPostRow[]).map((row) => ({
+    id: row.id,
+    title: row.title,
+    excerpt: row.excerpt,
+    body: row.body,
+    coverImage: row.cover_image ?? undefined,
+    date: row.date,
+  }));
 };
 
 export const getAllContent = (): ContentItem[] => db.content;
@@ -122,6 +146,11 @@ export const getContentWithGames = () =>
   }));
 
 export const getTimelineEntries = (): TimelineEntry[] => tl.entries;
+
+export const getAllBlogPosts = (): BlogPost[] => bp.posts;
+
+export const getBlogPostById = (id: string): BlogPost | undefined =>
+  bp.posts.find((post) => post.id === id);
 
 /**
  * Picks a representative date for a ContentItem.
@@ -166,7 +195,17 @@ export const getUnifiedTimeline = (): UnifiedTimelineItem[] => {
     source: "timeline",
   }));
 
-  return [...fromContent, ...fromTimeline].sort((a, b) =>
+  const fromBlog: UnifiedTimelineItem[] = bp.posts.map((post) => ({
+    id: `blog-${post.id}`,
+    blogId: post.id,
+    date: post.date,
+    name: post.title,
+    description: post.excerpt,
+    image: post.coverImage,
+    source: "blog",
+  }));
+
+  return [...fromContent, ...fromTimeline, ...fromBlog].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
 };

@@ -20,7 +20,7 @@ import { supabase } from "@/lib/supabase";
 
 interface FormState {
   id: string;
-  type: "hack" | "tool";
+  type: "hack" | "tool" | "project";
   gameIds: string[];
   name: string;
   authors: string;
@@ -55,7 +55,12 @@ export default function AdminContentForm() {
     existing
       ? {
           id: existing.id,
-          type: existing.type === "tool" ? "tool" : "hack",
+          type:
+            existing.type === "tool"
+              ? "tool"
+              : existing.type === "project"
+                ? "project"
+                : "hack",
           gameIds: existing.game ? existing.game.split(/\s+/).filter(Boolean) : [],
           name: existing.name,
           authors: existing.authors.join(", "),
@@ -229,7 +234,9 @@ export default function AdminContentForm() {
             <Label htmlFor="type">Type</Label>
             <Select
               value={form.type}
-              onValueChange={(value) => update("type", value as "hack" | "tool")}
+              onValueChange={(value) =>
+                update("type", value as "hack" | "tool" | "project")
+              }
             >
               <SelectTrigger id="type">
                 <SelectValue />
@@ -237,6 +244,7 @@ export default function AdminContentForm() {
               <SelectContent>
                 <SelectItem value="hack">Hack</SelectItem>
                 <SelectItem value="tool">Tool</SelectItem>
+                <SelectItem value="project">Project</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -17,8 +17,12 @@ grant insert, update, delete on public.content_downloads to authenticated;
 grant select on public.timeline_entries to anon, authenticated;
 grant insert, update, delete on public.timeline_entries to authenticated;
 
+grant select on public.blog_posts to anon, authenticated;
+grant insert, update, delete on public.blog_posts to authenticated;
+
 grant select, insert, update, delete on public.games to service_role;
 grant select, insert, update, delete on public.content_items to service_role;
 grant select, insert, update, delete on public.content_images to service_role;
 grant select, insert, update, delete on public.content_downloads to service_role;
 grant select, insert, update, delete on public.timeline_entries to service_role;
+grant select, insert, update, delete on public.blog_posts to service_role;

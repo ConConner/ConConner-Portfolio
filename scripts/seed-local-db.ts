@@ -120,6 +120,11 @@ const tables = [
     columns: ["id", "date", "name", "description", "image"],
     orderBy: "date",
   },
+  {
+    table: "blog_posts",
+    columns: ["id", "title", "excerpt", "body", "cover_image", "date"],
+    orderBy: "date",
+  },
 ];
 
 const sections = await Promise.all(
@@ -143,6 +148,7 @@ set standard_conforming_strings = on;
 delete from public.content_items;
 delete from public.games;
 delete from public.timeline_entries;
+delete from public.blog_posts;
 
 ${sections.join("\n")}`;
 
