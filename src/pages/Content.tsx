@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { getAllContent, getContentByType } from "../data/db";
 import { ContentCard } from "../components/ContentCard";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Dices } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SITE_URL, useSeo } from "@/lib/seo";
 
 type FilterType = "all" | "hack" | "tool" | "project";
 
@@ -18,7 +19,6 @@ function Content() {
   const content = getAllContent();
   const allHacks = getContentByType("hack");
   const randomHack = allHacks[Math.floor(Math.random() * allHacks.length)];
-  const navigate = useNavigate();
   const [filter, setFilter] = useState<FilterType>("all");
 
   const filteredContent = useMemo(
@@ -26,6 +26,27 @@ function Content() {
       filter === "all" ? content : content.filter((item) => item.type === filter),
     [content, filter],
   );
+
+  // The filter lives in component state rather than the URL, so there is a
+  // single canonical /projects listing an ItemList of every project.
+  useSeo({
+    title: "Projects",
+    description:
+      `All ${content.length} projects — Metroid ROM hacks, the tools built ` +
+      "to make them, and assorted experiments.",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "Projects",
+      numberOfItems: content.length,
+      itemListElement: content.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${SITE_URL}/projects/${item.id}`,
+        name: item.name,
+      })),
+    },
+  });
 
   return (
     <div className="flex flex-col gap-2 mt-2">
@@ -53,7 +74,7 @@ function Content() {
           <ContentCard
             key={item.id}
             item={item}
-            onClick={(item) => navigate(`/projects/${item.id}`)}
+            href={`/projects/${item.id}`}
           />
         ))}
       </div>

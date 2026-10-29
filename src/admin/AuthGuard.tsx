@@ -1,11 +1,15 @@
 import type { PropsWithChildren } from "react";
 import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useSeo } from "@/lib/seo";
 import { isAdminSession, signOut } from "./auth";
 import { useSession } from "./useSession";
 
 export function AuthGuard({ children }: PropsWithChildren) {
   const { session, loading } = useSession();
+
+  // Defence in depth alongside the `Disallow: /admin` in public/robots.txt.
+  useSeo({ title: "Admin", noindex: true });
 
   if (loading) {
     return <p className="p-6 text-muted-foreground">Checking session...</p>;

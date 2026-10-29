@@ -6,12 +6,17 @@ export const config = {
   matcher: "/projects/:id",
 };
 
-const BOT_USER_AGENT =
-  /discordbot|facebookexternalhit|twitterbot|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|pinterest|skypeuripreview|vkshare|applebot|google-inspectiontool|w3c_validator|iframely|embedly|bot|crawl|spider|preview/i;
+// Named unfurlers only, and deliberately an allowlist. A generic `bot|crawl|
+// spider` pattern also matches Googlebot, bingbot, Applebot and friends, which
+// sent every search crawler to /api/embed — a document with an empty <body> —
+// so no project page could ever be indexed. Search crawlers must fall through
+// to the SPA, which they render and index; see src/lib/seo.ts.
+const UNFURLER_USER_AGENT =
+  /discordbot|facebookexternalhit|facebookcatalog|twitterbot|slackbot|slack-imgproxy|telegrambot|whatsapp|linkedinbot|redditbot|pinterest|skypeuripreview|vkshare|iframely|embedly|mastodon|bluesky|flipboard|tumblr|nuzzel|qwantify/i;
 
 export default function middleware(request: Request) {
   const userAgent = request.headers.get("user-agent") ?? "";
-  if (!BOT_USER_AGENT.test(userAgent)) return;
+  if (!UNFURLER_USER_AGENT.test(userAgent)) return;
 
   const id = new URL(request.url).pathname.split("/").pop() ?? "";
   return Response.redirect(

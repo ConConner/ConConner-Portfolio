@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Private CRUD UI. Also carries a noindex meta tag at runtime.
+Disallow: /admin
+
+# /api/ is deliberately not disallowed: /api/embed serves the link-unfurl
+# cards, and some unfurlers honour robots.txt. It carries its own noindex.
+
+Sitemap: https://www.conconner.com/sitemap.xml

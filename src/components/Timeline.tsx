@@ -1,6 +1,6 @@
 // app/components/Timeline.tsx
 import { memo, type MouseEvent, useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Item,
   ItemContent,
@@ -29,29 +29,32 @@ const formatDate = (iso: string) =>
     day: "numeric",
   });
 
+/**
+ * Route a timeline entry points at, or undefined for standalone entries that
+ * have no page of their own.
+ */
+const timelineHref = (item: UnifiedTimelineItem): string | undefined => {
+  if (item.source === "content" && item.contentId) {
+    return `/projects/${item.contentId}`;
+  }
+  if (item.source === "blog" && item.blogId) return `/blog/${item.blogId}`;
+  return undefined;
+};
+
 interface TimelineItemProps {
   item: UnifiedTimelineItem;
   side: "left" | "right";
-  onClick?: (item: UnifiedTimelineItem) => void;
 }
 
 const TimelineEntry = memo(function TimelineEntry({
   item,
   side,
-  onClick,
 }: TimelineItemProps) {
-  const clickable = item.source === "content" || item.source === "blog";
-
-  const handleClick = useCallback(() => {
-    if (clickable) onClick?.(item);
-  }, [clickable, onClick, item]);
-
   const card = (
     <TimelineCard
       item={item}
       align={side === "left" ? "right" : "left"}
-      clickable={clickable}
-      onClick={handleClick}
+      href={timelineHref(item)}
     />
   );
 
@@ -86,23 +89,18 @@ const TimelineEntry = memo(function TimelineEntry({
 interface TimelineCardProps {
   item: UnifiedTimelineItem;
   align: "left" | "right";
-  clickable: boolean;
-  onClick: () => void;
+  /** Present for entries that have a page; rendered as a real anchor so these
+   *  count as crawlable internal links to the project and blog pages. */
+  href?: string;
 }
 
-function TimelineCardInner({
-  item,
-  align,
-  clickable,
-  onClick,
-}: TimelineCardProps) {
-  return (
+function TimelineCardInner({ item, align, href }: TimelineCardProps) {
+  const card = (
     <Item
       variant="outline"
-      onClick={clickable ? onClick : undefined}
       className={cn(
         "overflow-hidden p-0 transition-colors",
-        clickable && "cursor-pointer hover:border-primary",
+        href && "cursor-pointer hover:border-primary",
       )}
     >
       {item.image && (
@@ -131,6 +129,14 @@ function TimelineCardInner({
         <ItemTitle className="text-base leading-tight">{item.name}</ItemTitle>
       </ItemContent>
     </Item>
+  );
+
+  if (!href) return card;
+
+  return (
+    <Link to={href} aria-label={item.name} className="block">
+      {card}
+    </Link>
   );
 }
 
@@ -206,19 +212,6 @@ function TimelineCard(props: TimelineCardProps) {
 }
 
 export const Timeline = memo(function Timeline({ items }: TimelineProps) {
-  const navigate = useNavigate();
-
-  const handleClick = useCallback(
-    (item: UnifiedTimelineItem) => {
-      if (item.source === "content" && item.contentId) {
-        navigate(`/projects/${item.contentId}`);
-      } else if (item.source === "blog" && item.blogId) {
-        navigate(`/blog/${item.blogId}`);
-      }
-    },
-    [navigate],
-  );
-
   if (items.length === 0) {
     return (
       <p className="text-center text-muted-foreground">
@@ -234,7 +227,6 @@ export const Timeline = memo(function Timeline({ items }: TimelineProps) {
           key={item.id}
           item={item}
           side={i % 2 === 0 ? "left" : "right"}
-          onClick={handleClick}
         />
       ))}
     </ol>

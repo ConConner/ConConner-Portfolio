@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import type { ContentItem } from "@/data/types";
 
@@ -7,7 +8,9 @@ interface ImageMarqueeProps {
   speed?: number;
   pauseOnHover?: boolean;
   className?: string;
-  onImageClick?: (itemId: string) => void;
+  /** Builds the route each tile links to. Real anchors rather than click
+   *  handlers, so crawlers can follow them to the project pages. */
+  hrefForItem?: (itemId: string) => string;
 }
 
 interface ImageWithItem {
@@ -23,7 +26,7 @@ export function ImageMarquee({
   speed = 1000,
   pauseOnHover = true,
   className,
-  onImageClick,
+  hrefForItem,
 }: ImageMarqueeProps) {
   const images = useMemo<ImageWithItem[]>(() => {
     const all = items.flatMap((item) =>
@@ -47,8 +50,6 @@ export function ImageMarquee({
 
   if (images.length === 0) return null;
 
-  const isInteractive = Boolean(onImageClick);
-
   return (
     <div
       className={cn(
@@ -65,6 +66,7 @@ export function ImageMarquee({
         style={{ "--duration": `${speed}s` } as React.CSSProperties}
       >
         {track.map(({ src, itemId, itemName }, idx) => {
+          const href = hrefForItem?.(itemId);
           const content = (
             <>
               <img
@@ -95,21 +97,20 @@ export function ImageMarquee({
             "bg-muted",
           );
 
-          if (isInteractive) {
+          if (href) {
             return (
-              <button
+              <Link
                 key={`${src}-${idx}`}
-                type="button"
+                to={href}
                 aria-label={itemName}
-                onClick={() => onImageClick?.(itemId)}
                 className={cn(
                   baseClasses,
-                  "cursor-pointer focus-visible:outline-none",
+                  "block cursor-pointer focus-visible:outline-none",
                   "focus-visible:ring-2 focus-visible:ring-ring",
                 )}
               >
                 {content}
-              </button>
+              </Link>
             );
           }
 

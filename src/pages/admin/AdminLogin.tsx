@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSession } from "@/admin/useSession";
 import { signInWithGitHub, signInWithPassword } from "@/admin/auth";
+import { useSeo } from "@/lib/seo";
 
 /**
  * Password sign-in against the users seeded in
@@ -56,6 +57,9 @@ function LocalSignIn() {
 export default function AdminLogin() {
   const { session, loading } = useSession();
   const [error, setError] = useState<string | null>(null);
+
+  // This route is outside AuthGuard, so it needs its own noindex.
+  useSeo({ title: "Admin sign-in", noindex: true });
 
   if (loading) {
     return <p className="p-6 text-muted-foreground">Checking session...</p>;

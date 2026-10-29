@@ -1,12 +1,13 @@
 // app/routes/home.tsx
-import { memo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { memo } from "react";
+import { Link } from "react-router-dom";
 import { ImageMarquee } from "@/components/ImageMarquee";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Timeline } from "@/components/Timeline";
 import { getAllContent, getUnifiedTimeline } from "@/data/db";
 import { ContentMetrics } from "@/components/ContentMetrics";
+import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL, useSeo } from "@/lib/seo";
 
 const HeroBlobs = memo(function HeroBlobs() {
   return (
@@ -17,17 +18,24 @@ const HeroBlobs = memo(function HeroBlobs() {
   );
 });
 
+const projectHref = (itemId: string) => `/projects/${itemId}`;
+
 export default function Home() {
-  const navigate = useNavigate();
   const content = getAllContent();
-
-  const handleImageClick = useCallback(
-    (itemId: string) => navigate(`/projects/${itemId}`),
-    [navigate],
-  );
-
   const timelineItems = getUnifiedTimeline();
-  const handleViewAll = useCallback(() => navigate("/projects"), [navigate]);
+
+  useSeo({
+    title: SITE_NAME,
+    description: DEFAULT_DESCRIPTION,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: DEFAULT_DESCRIPTION,
+      author: { "@type": "Person", name: "ConConner" },
+    },
+  });
 
   return (
     <div className="flex flex-col items-center text-center">
@@ -59,10 +67,10 @@ export default function Home() {
           items={content}
           speed={1000}
           pauseOnHover
-          onImageClick={handleImageClick}
+          hrefForItem={projectHref}
         />
-        <Button size="lg" onClick={handleViewAll} className="mt-8">
-          View All Projects
+        <Button size="lg" asChild className="mt-8">
+          <Link to="/projects">View All Projects</Link>
         </Button>
       </section>
 

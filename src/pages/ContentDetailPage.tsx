@@ -9,8 +9,17 @@ import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import type { ContentItem, Download as DL, Game } from "@/data/types";
+import { SITE_URL, toDescription, useSeo } from "@/lib/seo";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
+
+// A hack is playable software, a tool is an application, and anything else is
+// left generic. Google only treats a handful of these as rich-result eligible,
+// but the type still tells it what the page is about.
+const SCHEMA_TYPE_BY_CONTENT_TYPE: Record<string, string> = {
+  hack: "VideoGame",
+  tool: "SoftwareApplication",
+};
 
 interface ContentDetailPageProps {
   item: ContentItem;
@@ -43,6 +52,28 @@ export function ContentDetailPage({
     (path: string) => onDownload?.(path),
     [onDownload],
   );
+
+  useSeo({
+    title: item.name,
+    description: toDescription(item.description),
+    image: item.images[0],
+    type: "article",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": SCHEMA_TYPE_BY_CONTENT_TYPE[item.type.toLowerCase()] ??
+        "CreativeWork",
+      name: item.name,
+      description: toDescription(item.description, 500),
+      url: `${SITE_URL}/projects/${item.id}`,
+      author: item.authors.map((name) => ({ "@type": "Person", name })),
+      ...(item.images.length > 0 ? { image: item.images } : {}),
+      ...(item.date ? { datePublished: item.date } : {}),
+      ...(game
+        ? { gamePlatform: game.console, isBasedOn: game.name }
+        : {}),
+      ...(latestDownload?.path ? { downloadUrl: latestDownload.path } : {}),
+    },
+  });
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-4">

@@ -1,4 +1,5 @@
-import { type KeyboardEvent, memo, useCallback } from "react";
+import { memo } from "react";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -11,43 +12,23 @@ import type { ContentItem } from "@/data/types";
 
 interface ContentCardProps {
   item: ContentItem;
-  onClick?: (item: ContentItem) => void;
+  /** Route to open. Rendered as a real anchor rather than a click handler so
+   *  crawlers can follow it and the usual middle-click/open-in-new-tab works. */
+  href?: string;
 }
 
 export const ContentCard = memo(function ContentCard({
   item,
-  onClick,
+  href,
 }: ContentCardProps) {
   const previewImage = item.images[0];
-  const isInteractive = Boolean(onClick);
 
-  const handleClick = useCallback(() => {
-    onClick?.(item);
-  }, [onClick, item]);
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLDivElement>) => {
-      if (!isInteractive) return;
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        onClick?.(item);
-      }
-    },
-    [onClick, item, isInteractive],
-  );
-
-  return (
+  const card = (
     <Card
-      role={isInteractive ? "button" : undefined}
-      tabIndex={isInteractive ? 0 : undefined}
-      aria-label={isInteractive ? item.name : undefined}
-      onClick={isInteractive ? handleClick : undefined}
-      onKeyDown={isInteractive ? handleKeyDown : undefined}
       className={[
         "group flex h-full flex-col overflow-hidden border-border/60",
         "transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        isInteractive &&
+        href &&
         "cursor-pointer hover:border-border hover:shadow-md hover:-translate-y-0.5",
       ]
         .filter(Boolean)
@@ -99,5 +80,17 @@ export const ContentCard = memo(function ContentCard({
         )}
       </CardFooter>
     </Card>
+  );
+
+  if (!href) return card;
+
+  return (
+    <Link
+      to={href}
+      aria-label={item.name}
+      className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      {card}
+    </Link>
   );
 });
